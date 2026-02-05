@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { User, Heart, Link, Activity, FileText, Pill, ClipboardList } from 'lucide-react';
+import { User, Heart, Activity, Pill, ClipboardList } from 'lucide-react';
 
-// Importações baseadas na sua nova estrutura de subpastas
+// Importações conferidas com sua estrutura de pastas
 import DadosPessoais from './Componentes/AbaPaciente/DadosPessoais';
 import EmergencyContacts from './Componentes/AbaPaciente/EmergencyContacts';
 import ConsultationHistory from './Componentes/AbaPaciente/ConsultationHistory';
@@ -11,27 +11,27 @@ import LVADDashboard from './Componentes/AbaDispositivo/LVADDashboard';
 import ResumoConsulta from './Componentes/AbaConsulta/ResumoConsulta';
 
 function App() {
-  // Estado para controlar qual aba está ativa no momento
+  // Estado inicializado corretamente
   const [abaAtiva, setAbaAtiva] = useState('paciente');
 
   return (
     <div className="min-h-screen bg-gray-100 font-sans">
-      {/* Cabeçalho Institucional - Mackenzie */}
+      {/* Cabeçalho Mackenzie */}
       <header className="bg-[#327933] text-white p-5 shadow-lg">
         <div className="flex items-center gap-3">
           <Activity size={28} />
           <div>
             <h1 className="text-2xl font-bold uppercase tracking-tight">Anamnese LVAD</h1>
-            <p className="text-xs opacity-80 uppercase font-bold">Mackenzie - Unidade de Insuficiência Cardíaca</p>
+            <p className="text-xs opacity-80 uppercase font-bold">Ficha de Anamnese para Paciente com Dispositivo de Assistência Ventricular Esquerda</p>
           </div>
         </div>
       </header>
 
-      {/* Navegação Superior Dinâmica */}
+      {/* Navegação Superior - Nomes de IDs padronizados */}
       <nav className="flex bg-white border-b sticky top-0 z-10 overflow-x-auto">
         {[
           { id: 'paciente', label: 'Paciente', icon: <User size={18} /> },
-          { id: 'clinica', label: 'Clínica', icon: <Heart size={18} /> },
+          { id: 'clinica', label: 'Informações Clínicas', icon: <Heart size={18} /> }, // ID simplificado para evitar erro
           { id: 'medicamentos', label: 'Medicamentos', icon: <Pill size={18} /> },
           { id: 'dispositivo', label: 'Dispositivo', icon: <Activity size={18} /> },
           { id: 'consulta', label: 'Consulta', icon: <ClipboardList size={18} /> },
@@ -51,7 +51,7 @@ function App() {
       </nav>
 
       <main className="p-6 grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Barra Lateral Esquerda (Perfil e Histórico) */}
+        {/* Barra Lateral */}
         <div className="lg:col-span-1 space-y-6">
           <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-200 text-center">
             <div className="w-32 h-32 bg-gray-50 rounded-full mx-auto border-2 border-dashed border-gray-300 flex items-center justify-center mb-4 text-gray-300">
@@ -64,7 +64,7 @@ function App() {
           <ConsultationHistory />
         </div>
 
-        {/* Lado Direito: Conteúdo das Abas */}
+        {/* Conteúdo Principal */}
         <div className="lg:col-span-3">
           
           {/* TELA: PACIENTE */}
@@ -83,7 +83,7 @@ function App() {
             </div>
           )}
 
-          {/* TELA: CLÍNICA */}
+          {/* TELA: INFORMAÇÕES CLÍNICAS - Corrigido */}
           {abaAtiva === 'clinica' && (
             <div className="space-y-6 animate-in fade-in duration-500">
               <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
@@ -133,7 +133,7 @@ function App() {
             </div>
           )}
 
-          {/* TELA: CONSULTA (Resumo Final) */}
+          {/* TELA: CONSULTA */}
           {abaAtiva === 'consulta' && (
             <div className="space-y-6 animate-in fade-in duration-500">
               <ResumoConsulta />
