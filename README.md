@@ -1,70 +1,35 @@
-# Getting Started with Create React App
+# Projeto TCC - Interface de Anamnese LVAD
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Este projeto faz parte do Trabalho de Conclusão de Curso (TCC) desenvolvido para o Mackenzie/Projeto do Coração. O objetivo é criar uma interface otimizada para a coleta de dados e monitoramento clínico de pacientes que utilizam Dispositivos de Assistência Ventricular Esquerda (LVAD).
 
-## Available Scripts
+🩺 Sobre o Projeto
+O uso de dispositivos LVAD exige um acompanhamento rigoroso. Esta aplicação web visa facilitar o processo de anamnese hospitalar, garantindo que informações críticas (dados pessoais, histórico clínico, medicamentos e parâmetros do dispositivo) sejam registradas de forma clara e intuitiva.
 
-In the project directory, you can run:
+🚀 Funcionalidades Implementadas (Módulos do Sistema)
+A aplicação foi estruturada de forma modular, dividindo o atendimento clínico em 5 etapas fundamentais:
 
-### `npm start`
+👤 Gestão do Paciente: Cadastro de dados pessoais, contatos de emergência e barra lateral com histórico cronológico de consultas.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+🏥 Informações Clínicas: Registro técnico incluindo número de prontuário, tipo sanguíneo, data/motivo do implante e checklist dinâmico de observações clínicas (fadiga, tontura, etc.).
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+💊 Gestão Farmacêutica: Interface dedicada com tabelas independentes para Histórico de Medicamentos Prescritos e Medicamentos Administrados, incluindo modais de cadastro interativos.
 
-### `npm test`
+💓 Monitoramento do Dispositivo (LVAD): Dashboard para acompanhamento de parâmetros técnicos do dispositivo, essencial para a segurança do paciente assistido.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+📄 Resumo da Consulta: Módulo final de revisão para conferência de todos os dados inseridos antes da persistência no sistema.
 
-### `npm run build`
+## 🚀 Como Executar o Projeto
+1. Clone o repositório:
+   git clone https://github.com/CleideLustosa/projeto_tcc_lvad_anamnese.git
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+2. Instale as dependências:
+   npm install
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+3. Inicie a aplicação:
+   npm start
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## 🛠️ Tecnologias Utilizadas
+* React.js
+* Tailwind CSS
+* Lucide React (Ícones)
+* Node.js
