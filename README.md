@@ -33,3 +33,4 @@ A aplicação foi estruturada de forma modular, dividindo o atendimento clínico
 * Tailwind CSS
 * Lucide React (Ícones)
 * Node.js
+...
