@@ -15,7 +15,7 @@ const DadosPessoais = () => {
         {/* Data Nascimento e Gênero */}
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1">
-            <label className="text-xs font-bold text-gray-500 uppercase">Nascimento *</label>
+            <label className="text-xs font-bold text-gray-500 uppercase">Data de Nascimento *</label>
             <input type="date" className="w-full p-3 bg-gray-50 border rounded-lg text-sm" />
           </div>
           <div className="space-y-1">

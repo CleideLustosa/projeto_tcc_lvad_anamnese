@@ -14,7 +14,7 @@ const MedicationTables = () => {
         <div className="flex justify-between items-center mb-6">
           <h3 className="font-bold text-gray-700 flex items-center gap-2">
             <ClipboardList className="text-[#327933]" size={20} />
-            Histórico de Medicamentos Prescritos
+            HISTÓRICOS DE MEDICAMENTOS PRESCRITOS
           </h3>
           <button 
             onClick={() => setShowPrescribedModal(true)}
@@ -47,7 +47,7 @@ const MedicationTables = () => {
         <div className="flex justify-between items-center mb-6">
           <h3 className="font-bold text-gray-700 flex items-center gap-2">
             <Pill className="text-[#327933]" size={20} />
-            Medicamentos Administrados
+            MEDICAMENTOS ADMINISTRADOS
           </h3>
           <button 
             onClick={() => setShowAdministeredModal(true)}

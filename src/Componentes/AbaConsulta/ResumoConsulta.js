@@ -1,69 +1,84 @@
 import React from 'react';
-import { ClipboardList, CheckCircle2, AlertCircle } from 'lucide-react';
+import { ClipboardCheck, Send } from 'lucide-react';
 
 const ResumoConsulta = () => {
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-        <h2 className="text-sm font-black text-[#327933] uppercase tracking-widest border-b pb-4 mb-6 flex items-center gap-2">
-          <ClipboardList size={20} /> Conclusão do Atendimento
-        </h2>
+    <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm animate-in fade-in duration-500 pb-10">
+      <h3 className="text-sm font-bold text-gray-700 flex items-center gap-2 uppercase tracking-wider mb-8">
+        <ClipboardCheck size={20} className="text-[#327933]" />
+        Conclusão do Atendimento
+      </h3>
 
-        <div className="space-y-6">
-          {/* Queixa Principal */}
-          <div className="space-y-2">
-            <label className="text-xs font-bold text-gray-500 uppercase">Queixa Principal *</label>
-            <textarea 
-              placeholder="Descreva o motivo principal da consulta hoje..." 
-              className="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl text-sm h-32 resize-none focus:ring-2 focus:ring-[#327933] outline-none transition-all"
-            ></textarea>
+      <div className="space-y-6">
+        {/* Queixa Principal */}
+        <div>
+          <label className="text-xs font-bold text-gray-600 uppercase mb-2 block">
+            Queixa Principal *
+          </label>
+          <textarea 
+            className="w-full p-4 bg-white border border-gray-200 rounded-xl text-sm outline-none focus:border-[#327933] min-h-[100px]"
+            placeholder="Descreva o motivo principal da consulta hoje..."
+          />
+        </div>
+
+        {/* Intensidade e Duração */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="text-xs font-bold text-gray-600 uppercase mb-2 block">
+              Intensidade dos Sintomas
+            </label>
+            <select className="w-full p-3 bg-white border border-gray-200 rounded-xl text-sm outline-none appearance-none">
+              <option value="">Selecione a intensidade</option>
+              <option value="1">1 - MUITO LEVE</option>
+              <option value="2">2 - LEVE</option>
+              <option value="3">3 - MODERADA</option>
+              <option value="4">4 - INTENSA</option>
+              <option value="5">5 - MUITO INTENSA</option>
+            </select>
           </div>
-
-          {/* Intensidade e Duração */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-gray-500 uppercase">Intensidade dos Sintomas</label>
-              <select className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm outline-none">
-                <option>Selecione a intensidade</option>
-                <option>1 - Muito Leve</option>
-                <option>2 - Leve</option>
-                <option>3 - Moderado</option>
-                <option>4 - Intenso</option>
-                <option>5 - Muito Intenso</option>
-              </select>
-            </div>
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-gray-500 uppercase">Duração</label>
-              <input 
-                type="text" 
-                placeholder="Ex: Há 3 dias" 
-                className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm outline-none"
-              />
-            </div>
-          </div>
-
-          {/* Observações Adicionais */}
-          <div className="space-y-2">
-            <label className="text-xs font-bold text-gray-500 uppercase">Conduta e Observações</label>
-            <textarea 
-              placeholder="Plano terapêutico, orientações dadas ao paciente ou alterações na medicação..." 
-              className="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl text-sm h-32 resize-none focus:ring-2 focus:ring-[#327933] outline-none transition-all"
-            ></textarea>
+          <div>
+            <label className="text-xs font-bold text-gray-600 uppercase mb-2 block">
+              Duração dos Sintomas
+            </label>
+            <input 
+              type="text"
+              placeholder="Ex: Há 3 dias"
+              className="w-full p-3 bg-white border border-gray-200 rounded-xl text-sm outline-none focus:border-[#327933]"
+            />
           </div>
         </div>
 
-        {/* Botão Finalizar - Simulação de Envio */}
-        <div className="mt-8 pt-6 border-t border-gray-100">
-          <button 
-            onClick={() => alert("Anamnese enviada com sucesso para o banco de dados do Mackenzie!")}
-            className="w-full bg-[#327933] text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-green-800 shadow-lg transition-all transform hover:scale-[1.01]"
-          >
-            <CheckCircle2 size={20} /> FINALIZAR E SALVAR ANAMNESE
-          </button>
-          <p className="text-[10px] text-gray-400 text-center mt-3 flex items-center justify-center gap-1 uppercase font-bold">
-            <AlertCircle size={12} /> Verifique todos os campos antes de confirmar
-          </p>
+        {/* Tratamentos Anteriores */}
+        <div>
+          <label className="text-xs font-bold text-gray-600 uppercase mb-2 block">
+            Tratamentos Anteriores
+          </label>
+          <textarea 
+            className="w-full p-4 bg-white border border-gray-200 rounded-xl text-sm outline-none focus:border-[#327933] min-h-[100px]"
+            placeholder="Descreva tratamentos já realizados para este problema..."
+          />
         </div>
+
+        {/* Conduta e Observações */}
+        <div>
+          <label className="text-xs font-bold text-gray-600 uppercase mb-2 block">
+            Conduta e Observações
+          </label>
+          <textarea 
+            className="w-full p-4 bg-white border border-gray-200 rounded-xl text-sm outline-none focus:border-[#327933] min-h-[120px]"
+            placeholder="Plano terapêutico, orientações dadas ao paciente ou alterações na medicação..."
+          />
+        </div>
+      </div>
+
+      <div className="mt-10">
+        <button className="w-full py-4 bg-[#327933] text-white font-bold rounded-xl shadow-lg hover:bg-green-800 transition-all flex items-center justify-center gap-2 uppercase tracking-widest text-xs">
+          <Send size={18} />
+          Finalizar e Salvar Anamnese
+        </button>
+        <p className="text-center text-[10px] text-gray-400 mt-3 font-medium uppercase">
+          ⚠️ Verifique todos os campos antes de confirmar
+        </p>
       </div>
     </div>
   );
