@@ -29,8 +29,12 @@ A aplicação foi estruturada de forma modular, dividindo o atendimento clínico
    npm start
 
 ## 🛠️ Tecnologias Utilizadas
-* React.js
-* Tailwind CSS
-* Lucide React (Ícones)
-* Node.js
+* React.js (Biblioteca principal)
+* Tailwind CSS (Estilização responsiva)
+* Lucide React (Acervos de Ícones)
+* Node.js (Ambiente de execução)
+* Context API (Gerenciamento de estado e persistência de dados)
+
+
+
 ...
