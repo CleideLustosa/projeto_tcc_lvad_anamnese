@@ -168,7 +168,7 @@ const EmergencyContacts = () => {
             
             <div className="p-6 space-y-4">
               <div>
-                <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1">Nome Completo</label>
+                <label className="block text-xs font-bold text-gray-600 uppercase mb-2se mb-1">Nome Completo</label>
                 <input 
                   type="text" 
                   className="w-full border p-3 rounded-xl outline-none focus:ring-2 focus:ring-[#327933] text-sm" 
@@ -180,7 +180,7 @@ const EmergencyContacts = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1">Relação</label>
+                  <label className="block text-xs font-bold text-gray-600 uppercase mb-2se mb-1">Relação</label>
                   <select 
                     className="w-full border p-3 rounded-xl outline-none text-sm bg-white"
                     value={novoContato.relacao}
@@ -191,7 +191,7 @@ const EmergencyContacts = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1">Telefone</label>
+                  <label className="block text-xs font-bold text-gray-600 uppercase mb-2se mb-1">Telefone</label>
                   <input 
                     type="text" 
                     className="w-full border p-3 rounded-xl outline-none text-sm" 
@@ -203,7 +203,7 @@ const EmergencyContacts = () => {
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1">E-mail</label>
+                <label className="block text-xs font-bold text-gray-600 uppercase mb-2se mb-1">E-mail</label>
                 <input 
                   type="email" 
                   className="w-full border p-3 rounded-xl outline-none text-sm" 

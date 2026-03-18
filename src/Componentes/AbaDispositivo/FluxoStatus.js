@@ -2,14 +2,16 @@ import React from 'react';
 import { Droplet } from 'lucide-react';
 
 const FluxoStatus = ({ value }) => {
-  // Lógica de saúde para Fluxo (Exemplo: Normal entre 4.0 e 6.0 L/min)
   const getFluxoStatus = (val) => {
     if (val >= 4.0 && val <= 6.0) {
-      return { color: 'text-red-500', bg: 'bg-green-100 text-green-700 border-green-200', label: 'Normal' };
+      // Mudei status.color para text-green-500
+      return { color: 'text-green-500', bg: 'bg-green-100 text-green-700 border-green-200', label: 'Normal' };
     }
     if (val >= 3.0 && val < 4.0) {
-      return { color: 'text-red-500', bg: 'bg-yellow-50 text-yellow-700 border-yellow-200', label: 'Baixo Fluxo' };
+      // Mudei status.color para text-yellow-500
+      return { color: 'text-yellow-500', bg: 'bg-yellow-50 text-yellow-700 border-yellow-200', label: 'Baixo Fluxo' };
     }
+    // Mantive text-red-500 para crítico
     return { color: 'text-red-500', bg: 'bg-red-50 text-red-700 border-red-200', label: 'Crítico' };
   };
 

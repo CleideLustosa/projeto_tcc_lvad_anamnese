@@ -1,67 +1,104 @@
 import React from 'react';
+import { useAnamnese } from '../../AnamneseContext'; // Importando a conexão com a nuvem
 
 const DadosPessoais = () => {
+  // Extraindo os dados e a função de atualização do contexto
+  const { formData, updateFormData } = useAnamnese();
+
+  // Função auxiliar para facilitar a atualização dos campos desta aba
+  const handleChange = (campo, valor) => {
+    updateFormData('paciente', { [campo]: valor });
+  };
+
   return (
-    <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-200">
-      <h2 className="text-lg font-bold text-gray-800 mb-6 border-b pb-2 uppercase">Dados Pessoais</h2>
-      
+    <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm animate-in fade-in duration-500">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Nome */}
-        <div className="space-y-1">
-          <label className="text-xs font-bold text-gray-500 uppercase">Nome Completo *</label>
-          <input type="text" placeholder="Digite o nome completo" className="w-full p-3 bg-gray-50 border rounded-lg outline-none focus:ring-1 focus:ring-[#327933]" />
-        </div>
         
-        {/* Data Nascimento e Gênero */}
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-1">
-            <label className="text-xs font-bold text-gray-500 uppercase">Data de Nascimento *</label>
-            <input type="date" className="w-full p-3 bg-gray-50 border rounded-lg text-sm" />
-          </div>
-          <div className="space-y-1">
-            <label className="text-xs font-bold text-gray-500 uppercase">Gênero *</label>
-            <div className="flex gap-4 pt-3">
-              <label className="text-sm flex items-center gap-1"><input type="radio" name="gen" /> Feminino</label>
-              <label className="text-sm flex items-center gap-1"><input type="radio" name="gen" /> Masculino</label>
-            </div>
-          </div>
+        {/* NOME COMPLETO */}
+        <div className="md:col-span-2">
+          <label className="text-xs font-bold text-gray-600 uppercase mb-2 block">Nome Completo</label>
+          <input 
+            type="text" 
+            value={formData.paciente.nome || ''} 
+            onChange={(e) => handleChange('nome', e.target.value)}
+            className="w-full p-3 bg-white border border-gray-200 rounded-xl text-sm outline-none focus:border-[#327933] transition-all"
+            placeholder="Digite o nome completo do paciente"
+          />
         </div>
 
-        {/* Nacionalidade e CPF */}
-        <div className="space-y-1">
-          <label className="text-xs font-bold text-gray-500 uppercase">Nacionalidade</label>
-          <input type="text" placeholder="Informe a nacionalidade" className="w-full p-3 bg-gray-50 border rounded-lg outline-none" />
-        </div>
-        <div className="space-y-1">
-          <label className="text-xs font-bold text-gray-500 uppercase">CPF *</label>
-          <input type="text" placeholder="000.000.000-00" className="w-full p-3 bg-gray-50 border rounded-lg outline-none" />
-        </div>
-
-        {/* Endereço - Ocupa a linha toda */}
-        <div className="md:col-span-2 space-y-1">
-          <label className="text-xs font-bold text-gray-500 uppercase">Endereço</label>
-          <input type="text" placeholder="Rua, número, complemento, bairro, cidade - UF" className="w-full p-3 bg-gray-50 border rounded-lg outline-none" />
+        {/* NACIONALIDADE */}
+        <div>
+          <label className="text-xs font-bold text-gray-600 uppercase mb-2 block">Nacionalidade</label>
+          <input 
+            type="text" 
+            value={formData.paciente.nacionalidade || ''} 
+            onChange={(e) => handleChange('nacionalidade', e.target.value)}
+            className="w-full p-3 bg-white border border-gray-200 rounded-xl text-sm outline-none focus:border-[#327933]"
+            placeholder="Ex: Brasileira"
+          />
         </div>
 
-        {/* Telefone e Profissão */}
-        <div className="space-y-1">
-          <label className="text-xs font-bold text-gray-500 uppercase">Telefone *</label>
-          <input type="text" placeholder="(00) 00000-0000" className="w-full p-3 bg-gray-50 border rounded-lg outline-none" />
-        </div>
-        <div className="space-y-1">
-          <label className="text-xs font-bold text-gray-500 uppercase">Profissão</label>
-          <input type="text" placeholder="Informe a profissão" className="w-full p-3 bg-gray-50 border rounded-lg outline-none" />
+        {/* CPF */}
+        <div>
+          <label className="text-xs font-bold text-gray-600 uppercase mb-2 block">CPF *</label>
+          <input 
+            type="text" 
+            value={formData.paciente.cpf || ''} 
+            onChange={(e) => handleChange('cpf', e.target.value)}
+            className="w-full p-3 bg-white border border-gray-200 rounded-xl text-sm outline-none focus:border-[#327933]"
+            placeholder="000.000.000-00"
+          />
         </div>
 
-        {/* Estado Civil */}
-        <div className="md:col-span-2 space-y-1">
-          <label className="text-xs font-bold text-gray-500 uppercase">Estado Civil</label>
-          <select className="w-full p-3 bg-gray-50 border rounded-lg outline-none">
-            <option>Selecione</option>
-            <option>Solteiro(a)</option>
-            <option>Casado(a)</option>
-            <option>Divorciado(a)</option>
-            <option>Viúvo(a)</option>
+        {/* ENDEREÇO */}
+        <div className="md:col-span-2">
+          <label className="text-xs font-bold text-gray-600 uppercase mb-2 block">Endereço Residencial</label>
+          <input 
+            type="text" 
+            value={formData.paciente.endereco || ''} 
+            onChange={(e) => handleChange('endereco', e.target.value)}
+            className="w-full p-3 bg-white border border-gray-200 rounded-xl text-sm outline-none focus:border-[#327933]"
+            placeholder="Rua, número, complemento, bairro, cidade - UF"
+          />
+        </div>
+
+        {/* TELEFONE */}
+        <div>
+          <label className="text-xs font-bold text-gray-600 uppercase mb-2 block">Telefone / WhatsApp *</label>
+          <input 
+            type="text" 
+            value={formData.paciente.telefone || ''} 
+            onChange={(e) => handleChange('telefone', e.target.value)}
+            className="w-full p-3 bg-white border border-gray-200 rounded-xl text-sm outline-none focus:border-[#327933]"
+            placeholder="(00) 00000-0000"
+          />
+        </div>
+
+        {/* PROFISSÃO */}
+        <div>
+          <label className="text-xs font-bold text-gray-600 uppercase mb-2 block">Profissão</label>
+          <input 
+            type="text" 
+            value={formData.paciente.profissao || ''} 
+            onChange={(e) => handleChange('profissao', e.target.value)}
+            className="w-full p-3 bg-white border border-gray-200 rounded-xl text-sm outline-none focus:border-[#327933]"
+            placeholder="Informe a profissão"
+          />
+        </div>
+
+        {/* ESTADO CIVIL */}
+        <div className="md:col-span-2">
+          <label className="text-xs font-bold text-gray-600 uppercase mb-2 block">Estado Civil</label>
+          <select 
+            value={formData.paciente.estadoCivil || ''} 
+            onChange={(e) => handleChange('estadoCivil', e.target.value)}
+            className="w-full p-3 bg-white border border-gray-200 rounded-xl text-sm outline-none focus:border-[#327933] appearance-none"
+          >
+            <option value="">Selecione</option>
+            <option value="solteiro">Solteiro(a)</option>
+            <option value="casado">Casado(a)</option>
+            <option value="divorciado">Divorciado(a)</option>
+            <option value="viuvo">Viúvo(a)</option>
           </select>
         </div>
       </div>

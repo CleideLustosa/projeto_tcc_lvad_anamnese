@@ -48,8 +48,8 @@ const LVADDashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Agora passamos apenas o valor, o componente decide a cor e o status */}
         <BatteryStatus charge={92} voltage="14.2V" />
-        <RPMStatus value={8000} />
-        <FluxoStatus value={3} />
+        <RPMStatus value={9500} />
+        <FluxoStatus value={6} />
       </div>
 
       <PerformanceChart />
