@@ -19,7 +19,7 @@ import Dashboard from './Componentes/AbaGerais/Dashboard';
 function App() {
   // Controle de Fluxo: 'login', 'pin' ou 'dashboard'
   const [etapa, setEtapa] = useState('login');
-  const [abaAtiva, setAbaAtiva] = useState('paciente');
+  const [abaAtiva, setAbaAtiva] = useState('dashboard');
 
   // Funções de transição
   const irParaPin = () => setEtapa('pin');
