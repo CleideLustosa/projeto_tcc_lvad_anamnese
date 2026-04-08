@@ -3,8 +3,8 @@ import React from 'react';
 const InformacoesClinicas = () => {
   const observacoesClinicas = [
     "Tolerância ao Exercício", "Fadiga/Fraqueza", "Tontura", 
-    "Falta de Ar", "Melhoria de Qualidade de Vida", 
-    "Desconforto no Peito", "Distúrbio do Sono"
+    "Falta de Ar", "Arritmia", "Febre", "Sangramento",
+    "Desconforto no Peito", "Distúrbio do Sono", "Infecções Frequentes"
   ];
 
   return (
@@ -50,16 +50,15 @@ const InformacoesClinicas = () => {
         </div>
       </div>
 
-      <div className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {[
           { id: "cons", label: "Considerações do Paciente", placeholder: "Observações relatadas pelo paciente" },
           { id: "aler", label: "Alergias", placeholder: "Medicamentos, alimentos ou substâncias" },
-          { id: "hist", label: "Histórico Clínico", placeholder: "Cirurgias anteriores e tratamentos" },
-          { id: "fam", label: "Histórico Familiar", placeholder: "Doenças de familiares próximos" }
+          { id: "hist", label: "Histórico Clínico", placeholder: "Cirurgias anteriores e tratamentos" }
         ].map((item) => (
-          <div key={item.id} className="space-y-1">
+          <div key={item.id} className={`${item.id === 'hist' ? 'md:col-span-2 ' : ''}space-y-1`}>
             <label className="text-xs font-bold text-gray-500 uppercase">{item.label}</label>
-            <textarea placeholder={item.placeholder} className="w-full p-3 bg-gray-50 border border-gray-100 rounded-lg text-sm h-24 resize-none outline-none focus:bg-white focus:ring-2 focus:ring-[#327933] transition-all"></textarea>
+            <textarea placeholder={item.placeholder} className="w-full p-3 bg-gray-50 border border-gray-100 rounded-lg text-sm h-28 resize-none outline-none focus:bg-white focus:ring-2 focus:ring-[#327933] transition-all"></textarea>
           </div>
         ))}
       </div>

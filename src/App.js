@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
 import { User, Heart, Activity, Pill, ClipboardList } from 'lucide-react';
-import { AnamneseProvider } from './AnamneseContext'; // Provedor de dados
+import { AnamneseProvider } from './AnamneseContext';
 
-// Importações de cada componente - 
+// Importações de componentes de tela
+import Login from './Componentes/Login/Login'; 
+import PinVerification from './Componentes/Login/PinVerification';
+
+// Importes Componentes de Abas
 import DadosPessoais from './Componentes/AbaPaciente/DadosPessoais';
 import EmergencyContacts from './Componentes/AbaPaciente/EmergencyContacts';
 import ConsultationHistory from './Componentes/AbaPaciente/ConsultationHistory';
@@ -10,14 +14,30 @@ import InformacoesClinicas from './Componentes/AbaClinica/InformacoesClinicas';
 import MedicationTables from './Componentes/AbaMedicamentos/MedicationTables';
 import LVADDashboard from './Componentes/AbaDispositivo/LVADDashboard';
 import ResumoConsulta from './Componentes/AbaConsulta/ResumoConsulta';
-
+import Dashboard from './Componentes/AbaGerais/Dashboard';
 
 function App() {
-  // Estado inicializado corretamente
-  const [abaAtiva, setAbaAtiva] = useState('paciente');
+  // Controle de Fluxo: 'login', 'pin' ou 'dashboard'
+  const [etapa, setEtapa] = useState('login');
+  const [abaAtiva, setAbaAtiva] = useState('dashboard');
 
+  // Funções de transição
+  const irParaPin = () => setEtapa('pin');
+  const irParaDashboard = () => setEtapa('dashboard');
+
+  // --- TELA DE LOGIN ---
+  if (etapa === 'login') {
+    return <Login onLoginSuccess={irParaPin} />;
+  }
+
+  // --- TELA DE PIN (2FA) ---
+  if (etapa === 'pin') {
+    return <PinVerification onConfirm={irParaDashboard} onBack={() => setEtapa('login')} />;
+  }
+
+  // --- INTERFACE PRINCIPAL (SÓ APARECE APÓS O PIN) ---
   return (
-    <AnamneseProvider> {/* Início do contexto global para persistência de dados */}
+    <AnamneseProvider>
       <div className="min-h-screen bg-gray-100 font-sans">
         {/* Cabeçalho */}
         <header className="bg-[#327933] text-white p-5 shadow-lg">
@@ -30,14 +50,15 @@ function App() {
           </div>
         </header>
 
-        {/* Navegação Superior - Nomes de IDs padronizados */}
+        {/* Navegação Superior */}
         <nav className="flex bg-white border-b sticky top-0 z-10 overflow-x-auto">
           {[
+            { id: 'dashboard', label: 'Dashboard', icon: <Activity size={18} /> },
             { id: 'paciente', label: 'Paciente', icon: <User size={18} /> },
             { id: 'clinica', label: 'Informações Clínicas', icon: <Heart size={18} /> },
             { id: 'medicamentos', label: 'Medicamentos', icon: <Pill size={18} /> },
             { id: 'dispositivo', label: 'Dispositivo', icon: <Activity size={18} /> },
-            { id: 'consulta', label: 'Consulta', icon: <ClipboardList size={18} /> },
+            { id: 'consulta', label: 'Conclusões', icon: <ClipboardList size={18} /> },
           ].map((aba) => (
             <button
               key={aba.id}
@@ -69,83 +90,68 @@ function App() {
 
           {/* Conteúdo Principal */}
           <div className="lg:col-span-3">
-            
-            {/* TELA: PACIENTE */}
             {abaAtiva === 'paciente' && (
               <div className="space-y-6 animate-in fade-in duration-500">
                 <DadosPessoais />
                 <EmergencyContacts />
                 <div className="flex justify-end pt-4">
-                  <button 
-                    onClick={() => setAbaAtiva('clinica')}
-                    className="bg-[#327933] text-white px-12 py-4 rounded-xl font-bold shadow-md hover:bg-green-800 transition-all"
-                  >
+                  <button onClick={() => setAbaAtiva('clinica')} className="bg-[#327933] text-white px-12 py-4 rounded-xl font-bold shadow-md hover:bg-green-800">
                     PRÓXIMO: INFORMAÇÕES CLÍNICAS →
                   </button>
                 </div>
               </div>
             )}
 
-            {/* TELA: INFORMAÇÕES CLÍNICAS - Corrigido */}
+            {abaAtiva === 'dashboard' && (
+              <div className="space-y-6 animate-in fade-in duration-500">
+                <Dashboard />
+              </div>
+            )}
+
             {abaAtiva === 'clinica' && (
               <div className="space-y-6 animate-in fade-in duration-500">
-                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-                  <InformacoesClinicas />
-                </div>
+                <InformacoesClinicas />
                 <div className="flex justify-between pt-4">
-                  <button onClick={() => setAbaAtiva('paciente')} className="text-gray-400 font-bold hover:text-gray-600 uppercase text-sm">← Voltar</button>
-                  <button 
-                    onClick={() => setAbaAtiva('medicamentos')}
-                    className="bg-[#327933] text-white px-12 py-4 rounded-xl font-bold shadow-md hover:bg-green-800 transition-all"
-                  >
+                  <button onClick={() => setAbaAtiva('paciente')} className="text-gray-400 font-bold uppercase text-sm">← Voltar</button>
+                  <button onClick={() => setAbaAtiva('medicamentos')} className="bg-[#327933] text-white px-12 py-4 rounded-xl font-bold">
                     PRÓXIMO: MEDICAMENTOS →
                   </button>
                 </div>
               </div>
             )}
 
-            {/* TELA: MEDICAMENTOS */}
             {abaAtiva === 'medicamentos' && (
               <div className="space-y-6 animate-in fade-in duration-500">
                 <MedicationTables />
                 <div className="flex justify-between pt-4">
-                  <button onClick={() => setAbaAtiva('clinica')} className="text-gray-400 font-bold hover:text-gray-600 uppercase text-sm">← Voltar</button>
-                  <button 
-                    onClick={() => setAbaAtiva('dispositivo')}
-                    className="bg-[#327933] text-white px-12 py-4 rounded-xl font-bold shadow-md hover:bg-green-800 transition-all"
-                  >
+                  <button onClick={() => setAbaAtiva('clinica')} className="text-gray-400 font-bold uppercase text-sm">← Voltar</button>
+                  <button onClick={() => setAbaAtiva('dispositivo')} className="bg-[#327933] text-white px-12 py-4 rounded-xl font-bold">
                     PRÓXIMO: DISPOSITIVO →
                   </button>
                 </div>
               </div>
             )}
 
-            {/* TELA: DISPOSITIVO */}
             {abaAtiva === 'dispositivo' && (
               <div className="space-y-6 animate-in fade-in duration-500">
                 <LVADDashboard />
                 <div className="flex justify-between pt-4">
-                  <button onClick={() => setAbaAtiva('medicamentos')} className="text-gray-400 font-bold hover:text-gray-600 uppercase text-sm">← Voltar</button>
-                  <button 
-                    onClick={() => setAbaAtiva('consulta')}
-                    className="bg-[#327933] text-white px-12 py-4 rounded-xl font-bold shadow-md hover:bg-green-800 transition-all"
-                  >
-                    PRÓXIMO: RESUMO DA CONSULTA →
+                  <button onClick={() => setAbaAtiva('medicamentos')} className="text-gray-400 font-bold uppercase text-sm">← Voltar</button>
+                  <button onClick={() => setAbaAtiva('consulta')} className="bg-[#327933] text-white px-12 py-4 rounded-xl font-bold">
+                    PRÓXIMO: CONCLUSÕES →
                   </button>
                 </div>
               </div>
             )}
 
-            {/* TELA: CONSULTA */}
             {abaAtiva === 'consulta' && (
               <div className="space-y-6 animate-in fade-in duration-500">
                 <ResumoConsulta />
                 <div className="flex justify-start pt-4">
-                  <button onClick={() => setAbaAtiva('dispositivo')} className="text-gray-400 font-bold hover:text-gray-600 uppercase text-sm">← Voltar</button>
+                  <button onClick={() => setAbaAtiva('dispositivo')} className="text-gray-400 font-bold uppercase text-sm">← Voltar</button>
                 </div>
               </div>
             )}
-
           </div>
         </main>
       </div>

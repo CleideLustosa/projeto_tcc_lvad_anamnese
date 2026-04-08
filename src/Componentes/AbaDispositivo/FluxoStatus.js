@@ -19,7 +19,7 @@ const FluxoStatus = ({ value }) => {
 
   return (
     <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm text-center flex flex-col items-center">
-      <div className={`mb-4 ${status.color} p-3 rounded-full`}>
+      <div className="mb-4 text-red-500 p-3 rounded-full">
         <Droplet size={24} className="fill-current" />
       </div>
       <h4 className="text-xs font-bold text-gray-400 uppercase mb-2 tracking-wider">Fluxo Sanguíneo</h4>
