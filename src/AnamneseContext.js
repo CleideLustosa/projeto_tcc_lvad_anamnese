@@ -6,7 +6,16 @@ export const AnamneseProvider = ({ children }) => {
   // Estado único que guarda todas as abas
   const [formData, setFormData] = useState({
     paciente: { nome: '', nacionalidade: '', cpf: '', endereco: '', telefone: '', profissao: '', estadoCivil: '', contatos: [] },
-    clinica: { prontuario: '', tipoSanguineo: '', dataImplante: '', motivoImplante: '', observacoes: [] },
+    clinica: { 
+      prontuario: '', 
+      tipoSanguineo: '', 
+      dataImplante: '', 
+      motivoImplante: '', 
+      observacoes: [],
+      consideracoes: '',
+      alergias: '',
+      historicoClinco: ''
+    },
     medicamentos: { prescritos: [], administrados: [] },
     consulta: { queixa: '', tratamentos: '', conduta: '' }
   });
