@@ -10,6 +10,7 @@ import PinVerification from './Componentes/Login/PinVerification';
 import DadosPessoais from './Componentes/AbaPaciente/DadosPessoais';
 import EmergencyContacts from './Componentes/AbaPaciente/EmergencyContacts';
 import ConsultationHistory from './Componentes/AbaPaciente/ConsultationHistory';
+import FotoPaciente from './Componentes/AbaPaciente/FotoPaciente';
 import InformacoesClinicas from './Componentes/AbaClinica/InformacoesClinicas';
 import MedicationTables from './Componentes/AbaMedicamentos/MedicationTables';
 import LVADDashboard from './Componentes/AbaDispositivo/LVADDashboard';
@@ -77,14 +78,7 @@ function App() {
         <main className="p-6 grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Barra Lateral */}
           <div className="lg:col-span-1 space-y-6">
-            <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-200 text-center">
-              <div className="w-32 h-32 bg-gray-50 rounded-full mx-auto border-2 border-dashed border-gray-300 flex items-center justify-center mb-4 text-gray-300">
-                  <User size={48} />
-              </div>
-              <button className="text-[10px] text-[#327933] font-bold border-2 border-[#327933] px-4 py-2 rounded-full hover:bg-green-50 transition-all uppercase">
-                Carregar Foto
-              </button>
-            </div>
+            <FotoPaciente />
             <ConsultationHistory />
           </div>
 
