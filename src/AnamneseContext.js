@@ -16,7 +16,13 @@ export const AnamneseProvider = ({ children }) => {
       alergias: '',
       historicoClinco: ''
     },
-    consulta: { queixa: '', tratamentos: '', conduta: '' }
+    consulta: { 
+      queixa: '', 
+      intensidadeSintomas: '', 
+      duracaoSintomas: '', 
+      tratamentos: '', 
+      conduta: '' 
+    }
   });
 
   // Estados para listas de medicamentos
@@ -34,22 +40,22 @@ export const AnamneseProvider = ({ children }) => {
     }));
   };
 
-  // Função para adicionar medicamento prescrito
+  // Função para adicionar medicamento prescrito crônico
   const adicionarPrescrito = (dados) => {
     setListaPrescritos([...listaPrescritos, { ...dados, id: Date.now() }]);
   };
 
-  // Função para remover medicamento prescrito
+  // Função para remover medicamento prescrito crônico
   const removerPrescrito = (id) => {
     setListaPrescritos(listaPrescritos.filter(med => med.id !== id));
   };
 
-  // Função para adicionar medicamento administrado
+  // Função para adicionar medicamento administrado de Emergência ou urgência
   const adicionarAdministrado = (dados) => {
     setListaAdministrados([...listaAdministrados, { ...dados, id: Date.now() }]);
   };
 
-  // Função para remover medicamento administrado
+  // Função para remover medicamento administrado de Emergência ou urgência
   const removerAdministrado = (id) => {
     setListaAdministrados(listaAdministrados.filter(med => med.id !== id));
   };

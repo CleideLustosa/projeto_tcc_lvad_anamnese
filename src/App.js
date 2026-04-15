@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, Heart, Activity, Pill, ClipboardList } from 'lucide-react';
+import { User, Heart, Activity, Pill, ClipboardList, Stethoscope } from 'lucide-react';
 import { AnamneseProvider } from './AnamneseContext';
 
 // Importações de componentes de tela
@@ -54,7 +54,7 @@ function App() {
         {/* Navegação Superior */}
         <nav className="flex bg-white border-b sticky top-0 z-10 overflow-x-auto">
           {[
-            { id: 'dashboard', label: 'Dashboard', icon: <Activity size={18} /> },
+            { id: 'dashboard', label: 'Triagem', icon: <Stethoscope size={18} /> },
             { id: 'paciente', label: 'Paciente', icon: <User size={18} /> },
             { id: 'clinica', label: 'Informações Clínicas', icon: <Heart size={18} /> },
             { id: 'medicamentos', label: 'Medicamentos', icon: <Pill size={18} /> },
