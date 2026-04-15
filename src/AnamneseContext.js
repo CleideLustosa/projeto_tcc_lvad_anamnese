@@ -16,9 +16,18 @@ export const AnamneseProvider = ({ children }) => {
       alergias: '',
       historicoClinco: ''
     },
-    medicamentos: { prescritos: [], administrados: [] },
-    consulta: { queixa: '', tratamentos: '', conduta: '' }
+    consulta: { 
+      queixa: '', 
+      intensidadeSintomas: '', 
+      duracaoSintomas: '', 
+      tratamentos: '', 
+      conduta: '' 
+    }
   });
+
+  // Estados para listas de medicamentos
+  const [listaPrescritos, setListaPrescritos] = useState([]);
+  const [listaAdministrados, setListaAdministrados] = useState([]);
 
   // Função para atualizar qualquer campo de qualquer aba preservando os dados anteriores
   const updateFormData = (aba, dados) => {
@@ -31,8 +40,37 @@ export const AnamneseProvider = ({ children }) => {
     }));
   };
 
+  // Função para adicionar medicamento prescrito crônico
+  const adicionarPrescrito = (dados) => {
+    setListaPrescritos([...listaPrescritos, { ...dados, id: Date.now() }]);
+  };
+
+  // Função para remover medicamento prescrito crônico
+  const removerPrescrito = (id) => {
+    setListaPrescritos(listaPrescritos.filter(med => med.id !== id));
+  };
+
+  // Função para adicionar medicamento administrado de Emergência ou urgência
+  const adicionarAdministrado = (dados) => {
+    setListaAdministrados([...listaAdministrados, { ...dados, id: Date.now() }]);
+  };
+
+  // Função para remover medicamento administrado de Emergência ou urgência
+  const removerAdministrado = (id) => {
+    setListaAdministrados(listaAdministrados.filter(med => med.id !== id));
+  };
+
   return (
-    <AnamneseContext.Provider value={{ formData, updateFormData }}>
+    <AnamneseContext.Provider value={{ 
+      formData, 
+      updateFormData,
+      listaPrescritos,
+      listaAdministrados,
+      adicionarPrescrito,
+      removerPrescrito,
+      adicionarAdministrado,
+      removerAdministrado
+    }}>
       {children}
     </AnamneseContext.Provider>
   );

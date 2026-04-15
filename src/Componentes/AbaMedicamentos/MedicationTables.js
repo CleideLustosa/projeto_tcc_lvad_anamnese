@@ -1,10 +1,25 @@
 import React, { useState } from 'react';
 import { Pill, Plus, X, Calendar, Clock, ClipboardList } from 'lucide-react';
+import { useAnamnese } from '../../AnamneseContext';
 
 const MedicationTables = () => {
+  const { listaPrescritos, listaAdministrados, adicionarPrescrito, removerPrescrito, adicionarAdministrado, removerAdministrado } = useAnamnese();
+
   // Estados independentes para controlar cada modal
   const [showPrescribedModal, setShowPrescribedModal] = useState(false);
   const [showAdministeredModal, setShowAdministeredModal] = useState(false);
+
+  // Handler para salvar medicamento prescrito
+  const handleSavePrescrited = (dados) => {
+    adicionarPrescrito(dados);
+    setShowPrescribedModal(false);
+  };
+
+  // Handler para salvar medicamento administrado
+  const handleSaveAdministered = (dados) => {
+    adicionarAdministrado(dados);
+    setShowAdministeredModal(false);
+  };
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500 pb-10">
@@ -30,15 +45,32 @@ const MedicationTables = () => {
           <div>Data da Prescrição</div>
           <div>Medicação</div>
           <div>Dosagem/Frequência</div>
-          <div>Notas Clínicas</div>
+          <div>Ações</div>
         </div>
-        <div className="grid grid-cols-4 gap-4 p-4 border border-t-0 rounded-b-xl items-center text-sm text-gray-600">
-          <div className="flex items-center gap-2 bg-gray-50 p-2 rounded border">
-            <Calendar size={14} /> dd/mm/aaaa
-          </div>
-          <div className="bg-gray-50 p-2 rounded border italic text-gray-400">Nome do medicamento</div>
-          <div className="bg-gray-50 p-2 rounded border italic text-gray-400">Ex: 100mg, 2x ao dia</div>
-          <div className="bg-gray-50 p-2 rounded border italic text-gray-400">Observações</div>
+        <div className="border border-t-0 rounded-b-xl">
+          {listaPrescritos.length === 0 ? (
+            <div className="p-6 text-center text-gray-400 italic">
+              Nenhum medicamento prescrito registrado
+            </div>
+          ) : (
+            listaPrescritos.map((med) => (
+              <div key={med.id} className="grid grid-cols-4 gap-4 p-4 border-b items-center text-sm text-gray-600 hover:bg-gray-50 transition-colors last:border-b-0">
+                <div className="flex items-center gap-2">
+                  <Calendar size={14} /> {med.dataPrescricao}
+                </div>
+                <div>{med.medicacao}</div>
+                <div>{med.dosagem}</div>
+                <div className="flex items-center gap-2">
+                  <button 
+                    onClick={() => removerPrescrito(med.id)}
+                    className="text-red-500 hover:bg-red-50 p-2 rounded transition-colors"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </section>
 
@@ -63,54 +95,144 @@ const MedicationTables = () => {
           <div>Data</div>
           <div>Horário</div>
           <div>Medicação</div>
-          <div>Dosagem</div>
+          <div>Ações</div>
         </div>
-        <div className="grid grid-cols-4 gap-4 p-4 border border-t-0 rounded-b-xl items-center text-sm text-gray-600">
-          <div className="flex items-center gap-2 bg-gray-50 p-2 rounded border"><Calendar size={14} /> dd/mm/aaaa</div>
-          <div className="flex items-center gap-2 bg-gray-50 p-2 rounded border"><Clock size={14} /> --:--</div>
-          <div className="bg-gray-50 p-2 rounded border italic text-gray-400">Nome do medicamento</div>
-          <div className="bg-gray-50 p-2 rounded border italic text-gray-400">Ex: 100mg</div>
+        <div className="border border-t-0 rounded-b-xl">
+          {listaAdministrados.length === 0 ? (
+            <div className="p-6 text-center text-gray-400 italic">
+              Nenhum medicamento administrado registrado
+            </div>
+          ) : (
+            listaAdministrados.map((med) => (
+              <div key={med.id} className="grid grid-cols-4 gap-4 p-4 border-b items-center text-sm text-gray-600 hover:bg-gray-50 transition-colors last:border-b-0">
+                <div className="flex items-center gap-2">
+                  <Calendar size={14} /> {med.data}
+                </div>
+                <div className="flex items-center gap-2">
+                  <Clock size={14} /> {med.horario}
+                </div>
+                <div>{med.medicacao}</div>
+                <div className="flex items-center gap-2">
+                  <button 
+                    onClick={() => removerAdministrado(med.id)}
+                    className="text-red-500 hover:bg-red-50 p-2 rounded transition-colors"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </section>
 
       {/* RENDERIZAÇÃO DOS MODAIS */}
-      {showPrescribedModal && <Modal title="Nova Prescrição" onClose={() => setShowPrescribedModal(false)} type="prescribed" />}
-      {showAdministeredModal && <Modal title="Registrar Administração" onClose={() => setShowAdministeredModal(false)} type="admin" />}
+      {showPrescribedModal && (
+        <Modal 
+          title="Nova Prescrição" 
+          onClose={() => setShowPrescribedModal(false)} 
+          type="prescribed"
+          onSave={handleSavePrescrited}
+        />
+      )}
+      {showAdministeredModal && (
+        <Modal 
+          title="Registrar Administração" 
+          onClose={() => setShowAdministeredModal(false)} 
+          type="admin"
+          onSave={handleSaveAdministered}
+        />
+      )}
     </div>
   );
 };
 
 // Componente Interno de Modal para evitar repetição de código
-const Modal = ({ title, onClose, type }) => (
-  <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-    <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose}></div>
-    <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in duration-300">
-      <div className="bg-[#327933] p-4 flex justify-between items-center text-white">
-        <h3 className="font-bold flex items-center gap-2">{title}</h3>
-        <button onClick={onClose} className="hover:bg-white/20 rounded-full p-1"><X size={20} /></button>
+const Modal = ({ title, onClose, type, onSave }) => {
+  const [medicacao, setMedicacao] = useState('');
+  const [data, setData] = useState('');
+  const [horario, setHorario] = useState('');
+  const [dosagem, setDosagem] = useState('');
+
+  const handleSave = () => {
+    if (!medicacao || !data || (!horario && type === 'admin') || (!dosagem && type === 'prescribed')) {
+      alert('Por favor, preencha todos os campos obrigatórios');
+      return;
+    }
+
+    if (type === 'prescribed') {
+      onSave({
+        medicacao,
+        dataPrescricao: data,
+        dosagem
+      });
+    } else {
+      onSave({
+        medicacao,
+        data,
+        horario
+      });
+    }
+
+    // Limpar formulário
+    setMedicacao('');
+    setData('');
+    setHorario('');
+    setDosagem('');
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose}></div>
+      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in duration-300">
+        <div className="bg-[#327933] p-4 flex justify-between items-center text-white">
+          <h3 className="font-bold flex items-center gap-2">{title}</h3>
+          <button onClick={onClose} className="hover:bg-white/20 rounded-full p-1"><X size={20} /></button>
+        </div>
+        <form className="p-6 space-y-4" onSubmit={(e) => { e.preventDefault(); handleSave(); }}>
+          {/* Inputs dinâmicos baseados no tipo */}
+          <div>
+            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Medicação *</label>
+            <input 
+              type="text" 
+              value={medicacao}
+              onChange={(e) => setMedicacao(e.target.value)}
+              className="w-full border p-3 rounded-lg outline-none focus:ring-2 focus:ring-[#327933]" 
+              placeholder="Nome do medicamento" 
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Data *</label>
+              <input 
+                type="date" 
+                value={data}
+                onChange={(e) => setData(e.target.value)}
+                className="w-full border p-3 rounded-lg outline-none focus:ring-2 focus:ring-[#327933]" 
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-gray-500 uppercase mb-1">{type === 'admin' ? 'Horário *' : 'Dosagem *'}</label>
+              <input 
+                type={type === 'admin' ? 'time' : 'text'} 
+                value={type === 'admin' ? horario : dosagem}
+                onChange={(e) => type === 'admin' ? setHorario(e.target.value) : setDosagem(e.target.value)}
+                className="w-full border p-3 rounded-lg outline-none focus:ring-2 focus:ring-[#327933]" 
+                placeholder={type === 'prescribed' ? 'Ex: 100mg, 2x ao dia' : ''}
+              />
+            </div>
+          </div>
+          <button 
+            type="button" 
+            onClick={handleSave} 
+            className="w-full py-3 bg-[#327933] text-white font-bold rounded-lg hover:bg-green-800 transition-all shadow-lg shadow-green-900/20"
+          >
+            SALVAR REGISTRO
+          </button>
+        </form>
       </div>
-      <form className="p-6 space-y-4">
-        {/* Inputs dinâmicos baseados no tipo */}
-        <div>
-          <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Medicação</label>
-          <input type="text" className="w-full border p-3 rounded-lg outline-none focus:ring-2 focus:ring-[#327933]" placeholder="Nome do medicamento" />
-        </div>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Data</label>
-            <input type="date" className="w-full border p-3 rounded-lg outline-none" />
-          </div>
-          <div>
-            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">{type === 'admin' ? 'Horário' : 'Dosagem'}</label>
-            <input type={type === 'admin' ? 'time' : 'text'} className="w-full border p-3 rounded-lg outline-none" />
-          </div>
-        </div>
-        <button type="button" onClick={onClose} className="w-full py-3 bg-[#327933] text-white font-bold rounded-lg hover:bg-green-800 transition-all shadow-lg shadow-green-900/20">
-          SALVAR REGISTRO
-        </button>
-      </form>
     </div>
-  </div>
-);
+  );
+};
 
 export default MedicationTables;
