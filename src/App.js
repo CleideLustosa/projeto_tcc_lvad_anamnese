@@ -26,6 +26,12 @@ function App() {
   const irParaPin = () => setEtapa('pin');
   const irParaDashboard = () => setEtapa('dashboard');
 
+  const handleCancelarAtendimento = () => {
+    if (window.confirm('Tem certeza que deseja cancelar o atendimento? Todos os dados não salvos serão perdidos.')) {
+      setAbaAtiva('dashboard');
+    }
+  };
+
   // --- TELA DE LOGIN ---
   if (etapa === 'login') {
     return <Login onLoginSuccess={irParaPin} />;
@@ -75,20 +81,25 @@ function App() {
           ))}
         </nav>
 
-        <main className="p-6 grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Barra Lateral */}
-          <div className="lg:col-span-1 space-y-6">
-            <FotoPaciente />
-            <ConsultationHistory />
-          </div>
+        <main className="p-6 flex gap-6" style={{ alignItems: 'flex-start' }}>
+          {/* Barra Lateral - Condicional */}
+          {abaAtiva !== 'dashboard' && (
+            <div className="flex-shrink-0 space-y-6" style={{ width: '300px' }}>
+              <FotoPaciente />
+              <ConsultationHistory />
+            </div>
+          )}
 
           {/* Conteúdo Principal */}
-          <div className="lg:col-span-3">
+          <div className="flex-1">
             {abaAtiva === 'paciente' && (
               <div className="space-y-6 animate-in fade-in duration-500">
                 <DadosPessoais />
                 <EmergencyContacts />
-                <div className="flex justify-end pt-4">
+                <div className="flex justify-end gap-4 pt-4">
+                  <button onClick={handleCancelarAtendimento} className="border-2 border-gray-400 text-gray-700 px-12 py-4 rounded-xl font-bold hover:bg-gray-100 transition-all uppercase text-sm">
+                    CANCELAR ATENDIMENTO
+                  </button>
                   <button onClick={() => setAbaAtiva('clinica')} className="bg-[#327933] text-white px-12 py-4 rounded-xl font-bold shadow-md hover:bg-green-800">
                     PRÓXIMO: INFORMAÇÕES CLÍNICAS →
                   </button>
@@ -98,7 +109,7 @@ function App() {
 
             {abaAtiva === 'dashboard' && (
               <div className="space-y-6 animate-in fade-in duration-500">
-                <Dashboard />
+                <Dashboard setAbaAtiva={setAbaAtiva} />
               </div>
             )}
 
