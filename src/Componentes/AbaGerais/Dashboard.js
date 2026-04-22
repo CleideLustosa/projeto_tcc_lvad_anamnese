@@ -3,11 +3,11 @@ import { User, CalendarDays, Bell, TrendingUp, ChevronDown, ChevronUp, X } from 
 import { useAnamnese } from '../../AnamneseContext';
 
 const pacientesEmConsulta = [
-  { nome: 'João Silva', idade: 65, sexo: 'M', tipoSanguineo: 'O+', ultimaVisita: '04/11/2025', status: 'Estável', foto: null },
-  { nome: 'Maria Santos', idade: 58, sexo: 'F', tipoSanguineo: 'AB-', ultimaVisita: '03/11/2025', status: 'Atenção', foto: null },
-  { nome: 'Pedro Costa', idade: 72, sexo: 'M', tipoSanguineo: 'A+', ultimaVisita: '02/11/2025', status: 'Estável', foto: null },
-  { nome: 'Ana Carolina', idade: 62, sexo: 'F', tipoSanguineo: 'B+', ultimaVisita: '04/11/2025', status: 'Atenção', foto: null },
-  { nome: 'Lucas Pereira', idade: 55, sexo: 'M', tipoSanguineo: 'O-', ultimaVisita: '05/11/2025', status: 'Estável', foto: null },
+  { nome: 'João Silva', idade: 65, sexo: 'M', tipoSanguineo: 'O+', ultimaVisita: '22/04/2026', status: 'Estável', foto: null },
+  { nome: 'Maria Santos', idade: 58, sexo: 'F', tipoSanguineo: 'AB-', ultimaVisita: '22/04/2026', status: 'Atenção', foto: null },
+  { nome: 'Pedro Costa', idade: 72, sexo: 'M', tipoSanguineo: 'A+', ultimaVisita: '22/04/2026', status: 'Estável', foto: null },
+  { nome: 'Ana Carolina', idade: 62, sexo: 'F', tipoSanguineo: 'B+', ultimaVisita: '21/04/2026', status: 'Atenção', foto: null },
+  { nome: 'Lucas Pereira', idade: 55, sexo: 'M', tipoSanguineo: 'O-', ultimaVisita: '20/04/2026', status: 'Estável', foto: null },
 ];
 
 const statusClasses = {
@@ -72,8 +72,43 @@ const Dashboard = ({ setAbaAtiva }) => {
   const { formData } = useAnamnese();
   const [modalAberto, setModalAberto] = useState(false);
   const [pacienteSelecionado, setPacienteSelecionado] = useState(null);
+  const [filtroTriagem, setFiltroTriagem] = useState(null); // Estado do filtro ativo
   
   const tipoSanguineo = formData?.clinica?.tipoSanguineo || '-';
+
+  // Função para obter a data de hoje no formato DD/MM/YYYY
+  const getDataHoje = () => {
+    const hoje = new Date();
+    return `${String(hoje.getDate()).padStart(2, '0')}/${String(hoje.getMonth() + 1).padStart(2, '0')}/${hoje.getFullYear()}`;
+  };
+
+  // Função para filtrar pacientes
+  const getPacientesFiltrados = () => {
+    if (!filtroTriagem) return pacientesEmConsulta;
+
+    switch (filtroTriagem) {
+      case 'consultas-hoje':
+        return pacientesEmConsulta.filter(p => p.ultimaVisita === getDataHoje());
+      case 'alertas-ativos':
+        return pacientesEmConsulta.filter(p => p.status === 'Atenção' || p.status === 'Risco');
+      case 'pacientes-ativos':
+        return pacientesEmConsulta;
+      default:
+        return pacientesEmConsulta;
+    }
+  };
+
+  // Funções de clique dos cards
+  const handleClickCardEstatistico = (tipoFiltro) => {
+    setFiltroTriagem(filtroTriagem === tipoFiltro ? null : tipoFiltro);
+  };
+
+  const handleClickTaxaAdesao = () => {
+    // Navegar para aba de estatísticas (será implementada)
+    if (setAbaAtiva) {
+      setAbaAtiva('estatisticas');
+    }
+  };
 
   const historicoConsultas = {
     'João Silva': [
@@ -131,109 +166,158 @@ const Dashboard = ({ setAbaAtiva }) => {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex items-center gap-3">
+        {/* Pacientes Ativos */}
+        <button
+          onClick={() => handleClickCardEstatistico('pacientes-ativos')}
+          className={`p-5 rounded-xl shadow-sm border-2 flex items-center gap-3 transition-all cursor-pointer ${
+            filtroTriagem === 'pacientes-ativos'
+              ? 'border-[#327933] bg-green-50 shadow-md'
+              : 'border-gray-200 bg-white hover:shadow-md hover:border-green-300'
+          }`}
+        >
           <div className="p-3 rounded-full bg-green-50 text-green-600"><User size={20} /></div>
-          <div>
+          <div className="text-left">
             <p className="text-xs text-gray-500 uppercase tracking-wide">Pacientes Ativos</p>
             <p className="text-2xl font-bold text-[#327933]">24</p>
           </div>
-        </div>
+        </button>
 
-        <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex items-center gap-3">
+        {/* Consultas Hoje */}
+        <button
+          onClick={() => handleClickCardEstatistico('consultas-hoje')}
+          className={`p-5 rounded-xl shadow-sm border-2 flex items-center gap-3 transition-all cursor-pointer ${
+            filtroTriagem === 'consultas-hoje'
+              ? 'border-blue-600 bg-blue-50 shadow-md'
+              : 'border-gray-200 bg-white hover:shadow-md hover:border-blue-300'
+          }`}
+        >
           <div className="p-3 rounded-full bg-blue-50 text-blue-600"><CalendarDays size={20} /></div>
-          <div>
+          <div className="text-left">
             <p className="text-xs text-gray-500 uppercase tracking-wide">Consultas Hoje</p>
             <p className="text-2xl font-bold text-[#327933]">8</p>
           </div>
-        </div>
+        </button>
 
-        <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex items-center gap-3">
+        {/* Alertas Ativos */}
+        <button
+          onClick={() => handleClickCardEstatistico('alertas-ativos')}
+          className={`p-5 rounded-xl shadow-sm border-2 flex items-center gap-3 transition-all cursor-pointer ${
+            filtroTriagem === 'alertas-ativos'
+              ? 'border-amber-600 bg-amber-50 shadow-md'
+              : 'border-gray-200 bg-white hover:shadow-md hover:border-amber-300'
+          }`}
+        >
           <div className="p-3 rounded-full bg-amber-50 text-amber-600"><Bell size={20} /></div>
-          <div>
+          <div className="text-left">
             <p className="text-xs text-gray-500 uppercase tracking-wide">Alertas Ativos</p>
             <p className="text-2xl font-bold text-[#327933]">3</p>
           </div>
-        </div>
+        </button>
 
-        <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex items-center gap-3">
+        {/* Taxa de Adesão */}
+        <button
+          onClick={handleClickTaxaAdesao}
+          className="p-5 rounded-xl shadow-sm border-2 border-gray-200 bg-white flex items-center gap-3 transition-all cursor-pointer hover:shadow-md hover:border-teal-300"
+        >
           <div className="p-3 rounded-full bg-teal-50 text-teal-600"><TrendingUp size={20} /></div>
-          <div>
+          <div className="text-left">
             <p className="text-xs text-gray-500 uppercase tracking-wide">Taxa de Adesão</p>
             <p className="text-2xl font-bold text-[#327933]">94%</p>
           </div>
-        </div>
+        </button>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <h3 className="text-lg font-bold text-gray-800 mb-4">Pacientes em Triagem</h3>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-bold text-gray-800">
+            {filtroTriagem === 'consultas-hoje' && '📅 Consultas de Hoje'}
+            {filtroTriagem === 'alertas-ativos' && '⚠️ Alertas Ativos'}
+            {filtroTriagem === 'pacientes-ativos' && '👥 Todos os Pacientes'}
+            {!filtroTriagem && '👥 Pacientes em Atendimento'}
+          </h3>
+          {filtroTriagem && (
+            <button
+              onClick={() => setFiltroTriagem(null)}
+              className="text-sm text-gray-500 hover:text-gray-700 font-semibold"
+            >
+              ✕ Limpar Filtro
+            </button>
+          )}
+        </div>
         <div className="space-y-4">
-          {pacientesEmConsulta.map((paciente) => {
-            return (
-              <div key={paciente.nome} className="rounded-xl border border-gray-200 overflow-hidden">
-                {/* Card Header com Info Principal */}
-                <div className="bg-white p-4 hover:bg-gray-50/50 transition-all">
-                  <div className="flex items-center gap-4 mb-3">
-                    {/* Foto do Paciente */}
-                    <div className="w-16 h-16 rounded-full bg-gray-200 border-2 border-gray-300 flex items-center justify-center flex-shrink-0">
-                      {paciente.foto ? (
-                        <img src={paciente.foto} alt={paciente.nome} className="w-full h-full object-cover rounded-full" />
-                      ) : (
-                        <User size={28} className="text-gray-400" />
-                      )}
-                    </div>
+          {getPacientesFiltrados().length > 0 ? (
+            getPacientesFiltrados().map((paciente) => {
+              return (
+                <div key={paciente.nome} className="rounded-xl border border-gray-200 overflow-hidden">
+                  {/* Card Header com Info Principal */}
+                  <div className="bg-white p-4 hover:bg-gray-50/50 transition-all">
+                    <div className="flex items-center gap-4 mb-3">
+                      {/* Foto do Paciente */}
+                      <div className="w-16 h-16 rounded-full bg-gray-200 border-2 border-gray-300 flex items-center justify-center flex-shrink-0">
+                        {paciente.foto ? (
+                          <img src={paciente.foto} alt={paciente.nome} className="w-full h-full object-cover rounded-full" />
+                        ) : (
+                          <User size={28} className="text-gray-400" />
+                        )}
+                      </div>
 
-                    {/* Info Principal - Reorganizado */}
-                    <div className="flex-1">
-                      <div className="grid grid-cols-2 gap-3 md:grid-cols-5 mb-3">
-                        <div>
-                          <p className="text-xs text-gray-500 uppercase tracking-wide font-bold">Nome</p>
-                          <p className="font-semibold text-gray-800">{paciente.nome}</p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-gray-500 uppercase tracking-wide font-bold">Idade</p>
-                          <p className="font-semibold text-gray-800">{paciente.idade}a</p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-gray-500 uppercase tracking-wide font-bold">Sexo</p>
-                          <p className="font-semibold text-gray-800">{paciente.sexo}</p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-gray-500 uppercase tracking-wide font-bold">Tipo Sanguíneo</p>
-                          <p className="font-semibold text-gray-800">{paciente.tipoSanguineo}</p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-gray-500 uppercase tracking-wide font-bold">Última Visita</p>
-                          <p className="font-semibold text-gray-800">{paciente.ultimaVisita}</p>
-                          
-                          {/* Histórico de Consultas - Abaixo de Última Visita */}
-                          <button
-                            onClick={() => handleAbriirModal(paciente)}
-                            className="flex items-center gap-1 text-sm text-green-600 hover:text-green-700 font-semibold transition-all mt-2"
-                          >
-                            <ChevronDown size={14} /> Histórico
-                          </button>
+                      {/* Info Principal - Reorganizado */}
+                      <div className="flex-1">
+                        <div className="grid grid-cols-2 gap-3 md:grid-cols-5 mb-3">
+                          <div>
+                            <p className="text-xs text-gray-500 uppercase tracking-wide font-bold">Nome</p>
+                            <p className="font-semibold text-gray-800">{paciente.nome}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-gray-500 uppercase tracking-wide font-bold">Idade</p>
+                            <p className="font-semibold text-gray-800">{paciente.idade}a</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-gray-500 uppercase tracking-wide font-bold">Sexo</p>
+                            <p className="font-semibold text-gray-800">{paciente.sexo}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-gray-500 uppercase tracking-wide font-bold">Tipo Sanguíneo</p>
+                            <p className="font-semibold text-gray-800">{paciente.tipoSanguineo}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-gray-500 uppercase tracking-wide font-bold">Última Visita</p>
+                            <p className="font-semibold text-gray-800">{paciente.ultimaVisita}</p>
+                            
+                            {/* Histórico de Consultas - Abaixo de Última Visita */}
+                            <button
+                              onClick={() => handleAbriirModal(paciente)}
+                              className="flex items-center gap-1 text-sm text-green-600 hover:text-green-700 font-semibold transition-all mt-2"
+                            >
+                              <ChevronDown size={14} /> Histórico
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Status e Botão Atender */}
-                  <div className="flex items-center justify-between gap-2">
-                    <span className={`px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full border ${statusClasses[paciente.status]}`}>
-                      {paciente.status}
-                    </span>
+                    {/* Status e Botão Atender */}
+                    <div className="flex items-center justify-between gap-2">
+                      <span className={`px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full border ${statusClasses[paciente.status]}`}>
+                        {paciente.status}
+                      </span>
 
-                    <button
-                      onClick={() => handleAtender(paciente)}
-                      className="bg-[#327933] text-white px-3 py-1 rounded-lg font-bold text-xs hover:bg-green-800 transition-all whitespace-nowrap"
-                    >
-                      + Atender
-                    </button>
+                      <button
+                        onClick={() => handleAtender(paciente)}
+                        className="bg-[#327933] text-white px-3 py-1 rounded-lg font-bold text-xs hover:bg-green-800 transition-all whitespace-nowrap"
+                      >
+                        + Atender
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })
+          ) : (
+            <div className="text-center py-8">
+              <p className="text-gray-500 font-semibold">Nenhum paciente encontrado com os filtros aplicados.</p>
+            </div>
+          )}
         </div>
       </div>
 
