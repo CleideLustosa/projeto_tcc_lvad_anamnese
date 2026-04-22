@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { User, CalendarDays, Bell, TrendingUp, Plus } from 'lucide-react';
+import { User, CalendarDays, Bell, TrendingUp, ChevronDown, ChevronUp, X } from 'lucide-react';
+import { useAnamnese } from '../../AnamneseContext';
 
 const pacientesEmConsulta = [
-  { nome: 'João Silva', idade: 65, ultimaVisita: '04/11/2025', status: 'Estável' },
-  { nome: 'Maria Santos', idade: 58, ultimaVisita: '03/11/2025', status: 'Atenção' },
-  { nome: 'Pedro Costa', idade: 72, ultimaVisita: '02/11/2025', status: 'Estável' },
-  { nome: 'Ana Carolina', idade: 62, ultimaVisita: '04/11/2025', status: 'Atenção' },
-  { nome: 'Lucas Pereira', idade: 55, ultimaVisita: '05/11/2025', status: 'Estável' },
+  { nome: 'João Silva', idade: 65, sexo: 'M', tipoSanguineo: 'O+', ultimaVisita: '04/11/2025', status: 'Estável', foto: null },
+  { nome: 'Maria Santos', idade: 58, sexo: 'F', tipoSanguineo: 'AB-', ultimaVisita: '03/11/2025', status: 'Atenção', foto: null },
+  { nome: 'Pedro Costa', idade: 72, sexo: 'M', tipoSanguineo: 'A+', ultimaVisita: '02/11/2025', status: 'Estável', foto: null },
+  { nome: 'Ana Carolina', idade: 62, sexo: 'F', tipoSanguineo: 'B+', ultimaVisita: '04/11/2025', status: 'Atenção', foto: null },
+  { nome: 'Lucas Pereira', idade: 55, sexo: 'M', tipoSanguineo: 'O-', ultimaVisita: '05/11/2025', status: 'Estável', foto: null },
 ];
 
 const statusClasses = {
@@ -15,15 +16,111 @@ const statusClasses = {
   Crítico: 'bg-red-100 text-red-700 border-red-200',
 };
 
-const Dashboard = () => {
-  const [selectedPatients, setSelectedPatients] = useState([]);
+// Modal de Histórico de Consultas
+const ModalHistorico = ({ paciente, consultas, isOpen, onClose, onSelectConsulta }) => {
+  if (!isOpen) return null;
 
-  const togglePatient = (nome) => {
-    setSelectedPatients((prev) =>
-      prev.includes(nome)
-        ? prev.filter((item) => item !== nome)
-        : [...prev, nome]
-    );
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-md w-full mx-4">
+        {/* Cabeçalho com fechar */}
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-lg font-bold text-gray-800">Histórico de Consultas</h2>
+          <button
+            onClick={onClose}
+            className="p-1 hover:bg-gray-100 rounded-lg transition-all"
+          >
+            <X size={20} className="text-gray-600" />
+          </button>
+        </div>
+
+        {/* Informações do Paciente */}
+        <p className="text-sm text-gray-600 mb-4">{paciente?.nome}</p>
+
+        {/* Lista de Consultas */}
+        <div className="space-y-3 max-h-96 overflow-y-auto">
+          {consultas.length > 0 ? (
+            consultas.map((consulta, index) => (
+              <button
+                key={index}
+                onClick={() => onSelectConsulta(consulta)}
+                className="w-full text-left p-3 rounded-lg border border-gray-200 hover:bg-green-50 hover:border-green-300 transition-all"
+              >
+                <p className="text-sm font-semibold text-gray-800">Consulta - {consulta.data}</p>
+                <p className="text-xs text-gray-500 mt-1">{consulta.medico}</p>
+                <p className="text-xs text-gray-600 mt-1">{consulta.motivo}</p>
+              </button>
+            ))
+          ) : (
+            <p className="text-center text-gray-500 py-4">Nenhuma consulta anterior registrada</p>
+          )}
+        </div>
+
+        {/* Botão Fechar */}
+        <button
+          onClick={onClose}
+          className="w-full mt-6 py-2 px-4 bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold rounded-lg transition-all"
+        >
+          Fechar
+        </button>
+      </div>
+    </div>
+  );
+};
+
+const Dashboard = ({ setAbaAtiva }) => {
+  const { formData } = useAnamnese();
+  const [modalAberto, setModalAberto] = useState(false);
+  const [pacienteSelecionado, setPacienteSelecionado] = useState(null);
+  
+  const tipoSanguineo = formData?.clinica?.tipoSanguineo || '-';
+
+  const historicoConsultas = {
+    'João Silva': [
+      { data: '04/11/2025', medico: 'Dr. Silva', motivo: 'Acompanhamento de rotina' },
+      { data: '28/10/2025', medico: 'Dra. Maria', motivo: 'Avaliação pós-implante' },
+      { data: '15/10/2025', medico: 'Dr. Silva', motivo: 'Exames de rotina' },
+    ],
+    'Maria Santos': [
+      { data: '03/11/2025', medico: 'Dra. Maria', motivo: 'Revisão de medicamentos' },
+      { data: '25/10/2025', medico: 'Dr. Silva', motivo: 'Acompanhamento' },
+    ],
+    'Pedro Costa': [
+      { data: '02/11/2025', medico: 'Dr. Costa', motivo: 'Exame de rotina' },
+      { data: '20/10/2025', medico: 'Dra. Maria', motivo: 'Avaliação clínica' },
+      { data: '10/10/2025', medico: 'Dr. Silva', motivo: 'Acompanhamento pós-implante' },
+    ],
+    'Ana Carolina': [
+      { data: '04/11/2025', medico: 'Dr. Silva', motivo: 'Acompanhamento' },
+      { data: '30/10/2025', medico: 'Dra. Maria', motivo: 'Avaliação de marca-passo' },
+    ],
+    'Lucas Pereira': [
+      { data: '05/11/2025', medico: 'Dr. Costa', motivo: 'Consulta de acompanhamento' },
+      { data: '22/10/2025', medico: 'Dr. Silva', motivo: 'Revisão de exames' },
+      { data: '08/10/2025', medico: 'Dra. Maria', motivo: 'Avaliação completa' },
+    ],
+  };
+
+  const handleAbriirModal = (paciente) => {
+    setPacienteSelecionado(paciente);
+    setModalAberto(true);
+  };
+
+  const handleFecharModal = () => {
+    setModalAberto(false);
+    setPacienteSelecionado(null);
+  };
+
+  const handleSelecionarConsulta = (consulta) => {
+    console.log('Consulta selecionada:', consulta);
+    // Aqui você pode carregar os dados da consulta no contexto
+    handleFecharModal();
+  };
+
+  const handleAtender = (paciente) => {
+    if (setAbaAtiva) {
+      setAbaAtiva('paciente');
+    }
   };
 
   return (
@@ -68,56 +165,86 @@ const Dashboard = () => {
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <h3 className="text-lg font-bold text-gray-800 mb-4">Pacientes em consulta</h3>
-        <div className="mb-4 rounded-xl bg-[#ecfdf5] border border-[#a7f3d0] px-4 py-3 text-sm text-[#065f46]">
-          {selectedPatients.length > 0 ? (
-            <span>{selectedPatients.length} paciente{selectedPatients.length > 1 ? 's' : ''} incluído{selectedPatients.length > 1 ? 's' : ''} no atendimento.</span>
-          ) : (
-            <span>Nenhum paciente incluído ainda. Clique no botão <strong>Incluir</strong> para adicionar ao atendimento.</span>
-          )}
-        </div>
-        <div className="space-y-3">
+        <h3 className="text-lg font-bold text-gray-800 mb-4">Pacientes em Triagem</h3>
+        <div className="space-y-4">
           {pacientesEmConsulta.map((paciente) => {
-            const isSelected = selectedPatients.includes(paciente.nome);
-
             return (
-              <div
-                key={paciente.nome}
-                className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 rounded-xl border transition-all ${
-                  isSelected ? 'border-[#327933] bg-green-50' : 'border-gray-100 bg-gray-50'
-                }`}
-              >
-                <div>
-                  <p className="font-semibold text-gray-800">{paciente.nome}</p>
-                  <p className="text-sm text-gray-500">{paciente.idade} anos</p>
-                </div>
+              <div key={paciente.nome} className="rounded-xl border border-gray-200 overflow-hidden">
+                {/* Card Header com Info Principal */}
+                <div className="bg-white p-4 hover:bg-gray-50/50 transition-all">
+                  <div className="flex items-center gap-4 mb-3">
+                    {/* Foto do Paciente */}
+                    <div className="w-16 h-16 rounded-full bg-gray-200 border-2 border-gray-300 flex items-center justify-center flex-shrink-0">
+                      {paciente.foto ? (
+                        <img src={paciente.foto} alt={paciente.nome} className="w-full h-full object-cover rounded-full" />
+                      ) : (
+                        <User size={28} className="text-gray-400" />
+                      )}
+                    </div>
 
-                <div className="text-left sm:text-right">
-                  <p className="text-sm text-gray-500">Última visita</p>
-                  <p className="font-semibold text-gray-700">{paciente.ultimaVisita}</p>
-                </div>
+                    {/* Info Principal - Reorganizado */}
+                    <div className="flex-1">
+                      <div className="grid grid-cols-2 gap-3 md:grid-cols-5 mb-3">
+                        <div>
+                          <p className="text-xs text-gray-500 uppercase tracking-wide font-bold">Nome</p>
+                          <p className="font-semibold text-gray-800">{paciente.nome}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-500 uppercase tracking-wide font-bold">Idade</p>
+                          <p className="font-semibold text-gray-800">{paciente.idade}a</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-500 uppercase tracking-wide font-bold">Sexo</p>
+                          <p className="font-semibold text-gray-800">{paciente.sexo}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-500 uppercase tracking-wide font-bold">Tipo Sanguíneo</p>
+                          <p className="font-semibold text-gray-800">{paciente.tipoSanguineo}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-500 uppercase tracking-wide font-bold">Última Visita</p>
+                          <p className="font-semibold text-gray-800">{paciente.ultimaVisita}</p>
+                          
+                          {/* Histórico de Consultas - Abaixo de Última Visita */}
+                          <button
+                            onClick={() => handleAbriirModal(paciente)}
+                            className="flex items-center gap-1 text-sm text-green-600 hover:text-green-700 font-semibold transition-all mt-2"
+                          >
+                            <ChevronDown size={14} /> Histórico
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
 
-                <div className="flex flex-col sm:items-end gap-3">
-                  <span className={`px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full border ${statusClasses[paciente.status]}`}>
-                    {paciente.status}
-                  </span>
-                  <button
-                    onClick={() => togglePatient(paciente.nome)}
-                    className={`inline-flex items-center gap-2 rounded-full px-3 py-2 text-xs font-bold transition ${
-                      isSelected
-                        ? 'bg-[#327933] text-white border border-[#327933]'
-                        : 'bg-white text-[#327933] border border-green-200 hover:border-[#327933] hover:text-[#327933]'
-                    }`}
-                  >
-                    <Plus size={14} />
-                    {isSelected ? 'Incluído' : 'Incluir'}
-                  </button>
+                  {/* Status e Botão Atender */}
+                  <div className="flex items-center justify-between gap-2">
+                    <span className={`px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full border ${statusClasses[paciente.status]}`}>
+                      {paciente.status}
+                    </span>
+
+                    <button
+                      onClick={() => handleAtender(paciente)}
+                      className="bg-[#327933] text-white px-3 py-1 rounded-lg font-bold text-xs hover:bg-green-800 transition-all whitespace-nowrap"
+                    >
+                      + Atender
+                    </button>
+                  </div>
                 </div>
               </div>
             );
           })}
         </div>
       </div>
+
+      {/* Modal de Histórico */}
+      <ModalHistorico
+        paciente={pacienteSelecionado}
+        consultas={pacienteSelecionado ? historicoConsultas[pacienteSelecionado.nome] || [] : []}
+        isOpen={modalAberto}
+        onClose={handleFecharModal}
+        onSelectConsulta={handleSelecionarConsulta}
+      />
     </div>
   );
 };
