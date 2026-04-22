@@ -3,11 +3,11 @@ import { User, CalendarDays, Bell, TrendingUp, ChevronDown, ChevronUp, X } from 
 import { useAnamnese } from '../../AnamneseContext';
 
 const pacientesEmConsulta = [
-  { nome: 'João Silva', idade: 65, sexo: 'M', tipoSanguineo: 'O+', ultimaVisita: '04/11/2025', status: 'Estável', foto: null },
-  { nome: 'Maria Santos', idade: 58, sexo: 'F', tipoSanguineo: 'AB-', ultimaVisita: '03/11/2025', status: 'Atenção', foto: null },
-  { nome: 'Pedro Costa', idade: 72, sexo: 'M', tipoSanguineo: 'A+', ultimaVisita: '02/11/2025', status: 'Estável', foto: null },
-  { nome: 'Ana Carolina', idade: 62, sexo: 'F', tipoSanguineo: 'B+', ultimaVisita: '04/11/2025', status: 'Atenção', foto: null },
-  { nome: 'Lucas Pereira', idade: 55, sexo: 'M', tipoSanguineo: 'O-', ultimaVisita: '05/11/2025', status: 'Estável', foto: null },
+  { nome: 'João Silva', idade: 65, sexo: 'M', tipoSanguineo: 'O+', ultimaVisita: '22/04/2026', status: 'Estável', foto: null },
+  { nome: 'Maria Santos', idade: 58, sexo: 'F', tipoSanguineo: 'AB-', ultimaVisita: '22/04/2026', status: 'Atenção', foto: null },
+  { nome: 'Pedro Costa', idade: 72, sexo: 'M', tipoSanguineo: 'A+', ultimaVisita: '22/04/2026', status: 'Estável', foto: null },
+  { nome: 'Ana Carolina', idade: 62, sexo: 'F', tipoSanguineo: 'B+', ultimaVisita: '21/04/2026', status: 'Atenção', foto: null },
+  { nome: 'Lucas Pereira', idade: 55, sexo: 'M', tipoSanguineo: 'O-', ultimaVisita: '20/04/2026', status: 'Estável', foto: null },
 ];
 
 const statusClasses = {

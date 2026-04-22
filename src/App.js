@@ -16,6 +16,7 @@ import MedicationTables from './Componentes/AbaMedicamentos/MedicationTables';
 import LVADDashboard from './Componentes/AbaDispositivo/LVADDashboard';
 import ResumoConsulta from './Componentes/AbaConsulta/ResumoConsulta';
 import Dashboard from './Componentes/AbaGerais/Dashboard';
+import EstatisticasAdesao from './Componentes/AbaGerais/EstatisticasAdesao';
 
 function App() {
   // Controle de Fluxo: 'login', 'pin' ou 'dashboard'
@@ -82,8 +83,8 @@ function App() {
         </nav>
 
         <main className="p-6 flex gap-6" style={{ alignItems: 'flex-start' }}>
-          {/* Barra Lateral - Condicional */}
-          {abaAtiva !== 'dashboard' && (
+          {/* Barra Lateral - Condicional (só aparece se não for dashboard ou estatisticas) */}
+          {abaAtiva !== 'dashboard' && abaAtiva !== 'estatisticas' && (
             <div className="flex-shrink-0 space-y-6" style={{ width: '300px' }}>
               <FotoPaciente />
               <ConsultationHistory />
@@ -110,6 +111,15 @@ function App() {
             {abaAtiva === 'dashboard' && (
               <div className="space-y-6 animate-in fade-in duration-500">
                 <Dashboard setAbaAtiva={setAbaAtiva} />
+              </div>
+            )}
+
+            {abaAtiva === 'estatisticas' && (
+              <div className="space-y-6 animate-in fade-in duration-500 w-full">
+                <EstatisticasAdesao />
+                <div className="flex justify-start pt-4">
+                  <button onClick={() => setAbaAtiva('dashboard')} className="text-gray-400 font-bold uppercase text-sm">← Voltar para Triagem</button>
+                </div>
               </div>
             )}
 
