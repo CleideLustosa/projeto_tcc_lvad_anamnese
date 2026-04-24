@@ -58,13 +58,15 @@
 import React, { useState } from 'react';
 import { Plus, X, UserPlus, Phone, Mail, ShieldCheck, Trash2, Heart, CheckCircle2, AlertCircle } from 'lucide-react';
 
+
+
 const EmergencyContacts = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [contatos, setContatos] = useState([
     { 
       id: 1, 
       nome: "Maria Silva", 
-      relacao: "Esposa", 
+      relacao: "Cônjuge", 
       telefone: "(11) 98888-7777", 
       email: "maria@email.com", 
       autorizado: true 
@@ -80,6 +82,25 @@ const EmergencyContacts = () => {
   });
 
   const tiposRelacao = ["Cônjuge", "Filho(a)", "Pai/Mãe", "Irmão(ã)", "Outro Familiar", "Amigo(a)", "Cuidador"];
+
+  // Função para formatar o telefone
+  const formatarTelefone = (valor) => {
+    // Remove tudo que não é número
+    const apenasNumeros = valor.replace(/\D/g, '');
+    
+    // Limita a 11 dígitos
+    if (apenasNumeros.length <= 11) {
+      // Formata como (XX) XXXXX-XXXX
+      if (apenasNumeros.length <= 2) {
+        return apenasNumeros;
+      } else if (apenasNumeros.length <= 7) {
+        return `(${apenasNumeros.slice(0, 2)}) ${apenasNumeros.slice(2)}`;
+      } else {
+        return `(${apenasNumeros.slice(0, 2)}) ${apenasNumeros.slice(2, 7)}-${apenasNumeros.slice(7)}`;
+      }
+    }
+    return valor;
+  };
 
   const handleSalvar = () => {
     if (novoContato.nome && novoContato.relacao) {
@@ -154,7 +175,7 @@ const EmergencyContacts = () => {
         )}
       </div>
 
-      {/* MODAL (Mantido conforme image_d453fd.jpg) */}
+      {/* MODAL */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setIsModalOpen(false)}></div>
@@ -168,7 +189,7 @@ const EmergencyContacts = () => {
             
             <div className="p-6 space-y-4">
               <div>
-                <label className="block text-xs font-bold text-gray-600 uppercase mb-2se mb-1">Nome Completo</label>
+                <label className="block text-xs font-bold text-gray-600 uppercase mb-2 mb-1">Nome Completo</label>
                 <input 
                   type="text" 
                   className="w-full border p-3 rounded-xl outline-none focus:ring-2 focus:ring-[#327933] text-sm" 
@@ -180,7 +201,7 @@ const EmergencyContacts = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-gray-600 uppercase mb-2se mb-1">Relação</label>
+                  <label className="block text-xs font-bold text-gray-600 uppercase mb-2 mb-1">Relação</label>
                   <select 
                     className="w-full border p-3 rounded-xl outline-none text-sm bg-white"
                     value={novoContato.relacao}
@@ -191,19 +212,19 @@ const EmergencyContacts = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-gray-600 uppercase mb-2se mb-1">Telefone</label>
+                  <label className="block text-xs font-bold text-gray-600 uppercase mb-2 mb-1">Telefone</label>
                   <input 
                     type="text" 
                     className="w-full border p-3 rounded-xl outline-none text-sm" 
                     placeholder="(00) 00000-0000"
                     value={novoContato.telefone}
-                    onChange={(e) => setNovoContato({...novoContato, telefone: e.target.value})}
+                    onChange={(e) => setNovoContato({...novoContato, telefone: formatarTelefone(e.target.value)})}
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-gray-600 uppercase mb-2se mb-1">E-mail</label>
+                <label className="block text-xs font-bold text-gray-600 uppercase mb-2 mb-1">E-mail</label>
                 <input 
                   type="email" 
                   className="w-full border p-3 rounded-xl outline-none text-sm" 
