@@ -3,16 +3,19 @@ import { User, CalendarDays, Bell, TrendingUp, ChevronDown, ChevronUp, X } from 
 import { useAnamnese } from '../../AnamneseContext';
 
 const pacientesEmConsulta = [
-  { nome: 'João Silva', idade: 65, sexo: 'M', tipoSanguineo: 'O+', ultimaVisita: '22/04/2026', status: 'Estável', foto: null },
-  { nome: 'Maria Santos', idade: 58, sexo: 'F', tipoSanguineo: 'AB-', ultimaVisita: '22/04/2026', status: 'Atenção', foto: null },
-  { nome: 'Pedro Costa', idade: 72, sexo: 'M', tipoSanguineo: 'A+', ultimaVisita: '22/04/2026', status: 'Estável', foto: null },
-  { nome: 'Ana Carolina', idade: 62, sexo: 'F', tipoSanguineo: 'B+', ultimaVisita: '21/04/2026', status: 'Atenção', foto: null },
-  { nome: 'Lucas Pereira', idade: 55, sexo: 'M', tipoSanguineo: 'O-', ultimaVisita: '20/04/2026', status: 'Estável', foto: null },
+  { nome: 'João Silva', idade: 65, sexo: 'M', tipoSanguineo: 'O+', ultimaVisita: '24/04/2026', status: 'Estável', foto: null },
+  { nome: 'Maria Santos', idade: 58, sexo: 'F', tipoSanguineo: 'AB-', ultimaVisita: '24/04/2026', status: 'Atenção', foto: null },
+  { nome: 'Pedro Costa', idade: 72, sexo: 'M', tipoSanguineo: 'A+', ultimaVisita: '24/04/2026', status: 'Estável', foto: null },
+  { nome: 'Ana Carolina', idade: 62, sexo: 'F', tipoSanguineo: 'B+', ultimaVisita: '24/04/2026', status: 'Atenção', foto: null },
+  { nome: 'Lucas Pereira', idade: 55, sexo: 'M', tipoSanguineo: 'O-', ultimaVisita: '24/04/2026', status: 'Risco', foto: null },
+  { nome: 'Fernanda Oliveira', idade: 68, sexo: 'F', tipoSanguineo: 'A-', ultimaVisita: '24/04/2026', status: 'Estável', foto: null },
+  { nome: 'Roberto Gomes', idade: 60, sexo: 'M', tipoSanguineo: 'B+', ultimaVisita: '24/04/2026', status: 'Estável', foto: null },
 ];
 
 const statusClasses = {
   Estável: 'bg-emerald-100 text-emerald-700 border-emerald-200',
   Atenção: 'bg-amber-100 text-amber-700 border-amber-200',
+  Risco: 'bg-red-100 text-red-700 border-red-200',
   Crítico: 'bg-red-100 text-red-700 border-red-200',
 };
 
@@ -134,6 +137,15 @@ const Dashboard = ({ setAbaAtiva }) => {
       { data: '22/10/2025', medico: 'Dr. Silva', motivo: 'Revisão de exames' },
       { data: '08/10/2025', medico: 'Dra. Maria', motivo: 'Avaliação completa' },
     ],
+    'Fernanda Oliveira': [
+      { data: '18/11/2025', medico: 'Dra. Maria', motivo: 'Avaliação de adesão medicamentosa' },
+      { data: '05/11/2025', medico: 'Dr. Silva', motivo: 'Revisão geral' },
+      { data: '24/10/2025', medico: 'Dr. Costa', motivo: 'Monitoramento LVAD' },
+    ],
+    'Roberto Gomes': [
+      { data: '12/11/2025', medico: 'Dr. Silva', motivo: 'Consulta de seguimento' },
+      { data: '29/10/2025', medico: 'Dra. Maria', motivo: 'Avaliação clínica' },
+    ],
   };
 
   const handleAbriirModal = (paciente) => {
@@ -194,7 +206,7 @@ const Dashboard = ({ setAbaAtiva }) => {
           <div className="p-3 rounded-full bg-blue-50 text-blue-600"><CalendarDays size={20} /></div>
           <div className="text-left">
             <p className="text-xs text-gray-500 uppercase tracking-wide">Consultas Hoje</p>
-            <p className="text-2xl font-bold text-[#327933]">8</p>
+            <p className="text-2xl font-bold text-[#327933]">7</p>
           </div>
         </button>
 
