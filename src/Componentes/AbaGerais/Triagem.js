@@ -3,13 +3,13 @@ import { User, CalendarDays, Bell, TrendingUp, ChevronDown, ChevronUp, X } from 
 import { useAnamnese } from '../../AnamneseContext';
 
 const pacientesEmConsulta = [
-  { nome: 'João Silva', idade: 65, sexo: 'M', tipoSanguineo: 'O+', ultimaVisita: '24/04/2026', status: 'Estável', foto: null },
-  { nome: 'Maria Santos', idade: 58, sexo: 'F', tipoSanguineo: 'AB-', ultimaVisita: '24/04/2026', status: 'Atenção', foto: null },
-  { nome: 'Pedro Costa', idade: 72, sexo: 'M', tipoSanguineo: 'A+', ultimaVisita: '24/04/2026', status: 'Estável', foto: null },
-  { nome: 'Ana Carolina', idade: 62, sexo: 'F', tipoSanguineo: 'B+', ultimaVisita: '24/04/2026', status: 'Atenção', foto: null },
-  { nome: 'Lucas Pereira', idade: 55, sexo: 'M', tipoSanguineo: 'O-', ultimaVisita: '24/04/2026', status: 'Risco', foto: null },
-  { nome: 'Fernanda Oliveira', idade: 68, sexo: 'F', tipoSanguineo: 'A-', ultimaVisita: '24/04/2026', status: 'Estável', foto: null },
-  { nome: 'Roberto Gomes', idade: 60, sexo: 'M', tipoSanguineo: 'B+', ultimaVisita: '24/04/2026', status: 'Estável', foto: null },
+  { nome: 'João Silva', idade: 65, sexo: 'M', tipoSanguineo: 'O+', ultimaVisita: '24/04/2026', dataAgendamento: '28/04/2026', status: 'Estável', foto: null },
+  { nome: 'Maria Santos', idade: 58, sexo: 'F', tipoSanguineo: 'AB-', ultimaVisita: '24/04/2026', dataAgendamento: '28/04/2026', status: 'Atenção', foto: null },
+  { nome: 'Pedro Costa', idade: 72, sexo: 'M', tipoSanguineo: 'A+', ultimaVisita: '24/04/2026', dataAgendamento: '28/04/2026', status: 'Estável', foto: null },
+  { nome: 'Ana Carolina', idade: 62, sexo: 'F', tipoSanguineo: 'B+', ultimaVisita: '24/04/2026', dataAgendamento: '29/04/2026', status: 'Atenção', foto: null },
+  { nome: 'Lucas Pereira', idade: 55, sexo: 'M', tipoSanguineo: 'O-', ultimaVisita: '24/04/2026', dataAgendamento: '28/04/2026', status: 'Risco', foto: null },
+  { nome: 'Fernanda Oliveira', idade: 68, sexo: 'F', tipoSanguineo: 'A-', ultimaVisita: '24/04/2026', dataAgendamento: '30/04/2026', status: 'Estável', foto: null },
+  { nome: 'Roberto Gomes', idade: 60, sexo: 'M', tipoSanguineo: 'B+', ultimaVisita: '24/04/2026', dataAgendamento: '28/04/2026', status: 'Estável', foto: null },
 ];
 
 const statusClasses = {
@@ -71,7 +71,8 @@ const ModalHistorico = ({ paciente, consultas, isOpen, onClose, onSelectConsulta
   );
 };
 
-const Dashboard = ({ setAbaAtiva }) => {
+// COMPONENTE TRIAGEM - Gestão de Triagem e Agenda de Consultas
+const Triagem = ({ setAbaAtiva }) => {
   const { formData } = useAnamnese();
   const [modalAberto, setModalAberto] = useState(false);
   const [pacienteSelecionado, setPacienteSelecionado] = useState(null);
@@ -91,10 +92,13 @@ const Dashboard = ({ setAbaAtiva }) => {
 
     switch (filtroTriagem) {
       case 'consultas-hoje':
-        return pacientesEmConsulta.filter(p => p.ultimaVisita === getDataHoje());
+        // TODO: Filtrar por médicoLogado.crm para exibir apenas consultas do médico logado
+        return pacientesEmConsulta.filter(p => p.dataAgendamento === getDataHoje());
       case 'alertas-ativos':
+        // TODO: Filtrar por médicoLogado.crm para exibir alertas do médico logado
         return pacientesEmConsulta.filter(p => p.status === 'Atenção' || p.status === 'Risco');
       case 'pacientes-ativos':
+        // TODO: Filtrar por médicoLogado.crm para exibir pacientes do médico logado
         return pacientesEmConsulta;
       default:
         return pacientesEmConsulta;
@@ -190,11 +194,11 @@ const Dashboard = ({ setAbaAtiva }) => {
           <div className="p-3 rounded-full bg-green-50 text-green-600"><User size={20} /></div>
           <div className="text-left">
             <p className="text-xs text-gray-500 uppercase tracking-wide">Pacientes Ativos</p>
-            <p className="text-2xl font-bold text-[#327933]">24</p>
+            <p className="text-2xl font-bold text-[#327933]">{pacientesEmConsulta.length}</p>
           </div>
         </button>
 
-        {/* Consultas Hoje */}
+        {/* Consultas Hoje - Contagem dinâmica baseada em dataAgendamento */}
         <button
           onClick={() => handleClickCardEstatistico('consultas-hoje')}
           className={`p-5 rounded-xl shadow-sm border-2 flex items-center gap-3 transition-all cursor-pointer ${
@@ -206,11 +210,11 @@ const Dashboard = ({ setAbaAtiva }) => {
           <div className="p-3 rounded-full bg-blue-50 text-blue-600"><CalendarDays size={20} /></div>
           <div className="text-left">
             <p className="text-xs text-gray-500 uppercase tracking-wide">Consultas Hoje</p>
-            <p className="text-2xl font-bold text-[#327933]">7</p>
+            <p className="text-2xl font-bold text-[#327933]">{pacientesEmConsulta.filter(p => p.dataAgendamento === getDataHoje()).length}</p>
           </div>
         </button>
 
-        {/* Alertas Ativos */}
+        {/* Alertas Ativos - Contagem dinâmica */}
         <button
           onClick={() => handleClickCardEstatistico('alertas-ativos')}
           className={`p-5 rounded-xl shadow-sm border-2 flex items-center gap-3 transition-all cursor-pointer ${
@@ -222,7 +226,7 @@ const Dashboard = ({ setAbaAtiva }) => {
           <div className="p-3 rounded-full bg-amber-50 text-amber-600"><Bell size={20} /></div>
           <div className="text-left">
             <p className="text-xs text-gray-500 uppercase tracking-wide">Alertas Ativos</p>
-            <p className="text-2xl font-bold text-[#327933]">3</p>
+            <p className="text-2xl font-bold text-[#327933]">{pacientesEmConsulta.filter(p => p.status === 'Atenção' || p.status === 'Risco').length}</p>
           </div>
         </button>
 
@@ -345,4 +349,4 @@ const Dashboard = ({ setAbaAtiva }) => {
   );
 };
 
-export default Dashboard;
+export default Triagem;
