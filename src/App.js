@@ -15,7 +15,7 @@ import InformacoesClinicas from './Componentes/AbaClinica/InformacoesClinicas';
 import MedicationTables from './Componentes/AbaMedicamentos/MedicationTables';
 import LVADDashboard from './Componentes/AbaDispositivo/LVADDashboard';
 import ResumoConsulta from './Componentes/AbaConsulta/ResumoConsulta';
-import Dashboard from './Componentes/AbaGerais/Dashboard';
+import Triagem from './Componentes/AbaGerais/Triagem';
 import EstatisticasAdesao from './Componentes/AbaGerais/EstatisticasAdesao';
 
 function App() {
@@ -110,7 +110,7 @@ function App() {
 
             {abaAtiva === 'dashboard' && (
               <div className="space-y-6 animate-in fade-in duration-500">
-                <Dashboard setAbaAtiva={setAbaAtiva} />
+                <Triagem setAbaAtiva={setAbaAtiva} />
               </div>
             )}
 
