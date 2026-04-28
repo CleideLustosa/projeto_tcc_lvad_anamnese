@@ -1,16 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { User, CalendarDays, Bell, TrendingUp, ChevronDown, ChevronUp, X } from 'lucide-react';
 import { useAnamnese } from '../../AnamneseContext';
-
-const pacientesEmConsulta = [
-  { nome: 'João Silva', idade: 65, sexo: 'M', tipoSanguineo: 'O+', ultimaVisita: '24/04/2026', dataAgendamento: '28/04/2026', status: 'Estável', foto: null },
-  { nome: 'Maria Santos', idade: 58, sexo: 'F', tipoSanguineo: 'AB-', ultimaVisita: '24/04/2026', dataAgendamento: '28/04/2026', status: 'Atenção', foto: null },
-  { nome: 'Pedro Costa', idade: 72, sexo: 'M', tipoSanguineo: 'A+', ultimaVisita: '24/04/2026', dataAgendamento: '28/04/2026', status: 'Estável', foto: null },
-  { nome: 'Ana Carolina', idade: 62, sexo: 'F', tipoSanguineo: 'B+', ultimaVisita: '24/04/2026', dataAgendamento: '29/04/2026', status: 'Atenção', foto: null },
-  { nome: 'Lucas Pereira', idade: 55, sexo: 'M', tipoSanguineo: 'O-', ultimaVisita: '24/04/2026', dataAgendamento: '28/04/2026', status: 'Risco', foto: null },
-  { nome: 'Fernanda Oliveira', idade: 68, sexo: 'F', tipoSanguineo: 'A-', ultimaVisita: '24/04/2026', dataAgendamento: '30/04/2026', status: 'Estável', foto: null },
-  { nome: 'Roberto Gomes', idade: 60, sexo: 'M', tipoSanguineo: 'B+', ultimaVisita: '24/04/2026', dataAgendamento: '28/04/2026', status: 'Estável', foto: null },
-];
+import { db } from '../../firebaseConfig';
+import { collection, onSnapshot } from 'firebase/firestore';
 
 const statusClasses = {
   Estável: 'bg-emerald-100 text-emerald-700 border-emerald-200',
@@ -71,14 +63,46 @@ const ModalHistorico = ({ paciente, consultas, isOpen, onClose, onSelectConsulta
   );
 };
 
-// COMPONENTE TRIAGEM - Gestão de Triagem e Agenda de Consultas
 const Triagem = ({ setAbaAtiva }) => {
   const { formData } = useAnamnese();
+  const [pacientes, setPacientes] = useState([]);
   const [modalAberto, setModalAberto] = useState(false);
   const [pacienteSelecionado, setPacienteSelecionado] = useState(null);
-  const [filtroTriagem, setFiltroTriagem] = useState(null); // Estado do filtro ativo
+  const [filtroTriagem, setFiltroTriagem] = useState(null);
+  const [carregando, setCarregando] = useState(true);
+  const [erro, setErro] = useState(null);
   
   const tipoSanguineo = formData?.clinica?.tipoSanguineo || '-';
+
+  // Hook para conectar ao Firebase em tempo real
+  useEffect(() => {
+    setCarregando(true);
+    const unsubscribe = onSnapshot(
+      collection(db, 'pacientes'),
+      (snapshot) => {
+        try {
+          const pacientesData = snapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+          setPacientes(pacientesData);
+          setErro(null);
+        } catch (err) {
+          console.error('Erro ao carregar pacientes:', err);
+          setErro('Erro ao carregar pacientes do banco de dados');
+        } finally {
+          setCarregando(false);
+        }
+      },
+      (error) => {
+        console.error('Erro na conexão com Firestore:', error);
+        setErro('Erro na conexão com o banco de dados');
+        setCarregando(false);
+      }
+    );
+
+    return () => unsubscribe();
+  }, []);
 
   // Função para obter a data de hoje no formato DD/MM/YYYY
   const getDataHoje = () => {
@@ -88,20 +112,20 @@ const Triagem = ({ setAbaAtiva }) => {
 
   // Função para filtrar pacientes
   const getPacientesFiltrados = () => {
-    if (!filtroTriagem) return pacientesEmConsulta;
+    if (!filtroTriagem) return pacientes;
 
     switch (filtroTriagem) {
       case 'consultas-hoje':
         // TODO: Filtrar por médicoLogado.crm para exibir apenas consultas do médico logado
-        return pacientesEmConsulta.filter(p => p.dataAgendamento === getDataHoje());
+        return pacientes.filter(p => p.dataAgendamento === '28/04/2026');
       case 'alertas-ativos':
         // TODO: Filtrar por médicoLogado.crm para exibir alertas do médico logado
-        return pacientesEmConsulta.filter(p => p.status === 'Atenção' || p.status === 'Risco');
+        return pacientes.filter(p => p.status === 'Atenção' || p.status === 'Risco');
       case 'pacientes-ativos':
         // TODO: Filtrar por médicoLogado.crm para exibir pacientes do médico logado
-        return pacientesEmConsulta;
+        return pacientes;
       default:
-        return pacientesEmConsulta;
+        return pacientes;
     }
   };
 
@@ -182,7 +206,7 @@ const Triagem = ({ setAbaAtiva }) => {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Pacientes Ativos */}
+        {/* Pacientes Ativos - Contagem dinâmica do Firestore */}
         <button
           onClick={() => handleClickCardEstatistico('pacientes-ativos')}
           className={`p-5 rounded-xl shadow-sm border-2 flex items-center gap-3 transition-all cursor-pointer ${
@@ -194,7 +218,7 @@ const Triagem = ({ setAbaAtiva }) => {
           <div className="p-3 rounded-full bg-green-50 text-green-600"><User size={20} /></div>
           <div className="text-left">
             <p className="text-xs text-gray-500 uppercase tracking-wide">Pacientes Ativos</p>
-            <p className="text-2xl font-bold text-[#327933]">{pacientesEmConsulta.length}</p>
+            <p className="text-2xl font-bold text-[#327933]">{pacientes.length}</p>
           </div>
         </button>
 
@@ -210,7 +234,7 @@ const Triagem = ({ setAbaAtiva }) => {
           <div className="p-3 rounded-full bg-blue-50 text-blue-600"><CalendarDays size={20} /></div>
           <div className="text-left">
             <p className="text-xs text-gray-500 uppercase tracking-wide">Consultas Hoje</p>
-            <p className="text-2xl font-bold text-[#327933]">{pacientesEmConsulta.filter(p => p.dataAgendamento === getDataHoje()).length}</p>
+            <p className="text-2xl font-bold text-[#327933]">{pacientes.filter(p => p.dataAgendamento === '28/04/2026').length}</p>
           </div>
         </button>
 
@@ -226,7 +250,7 @@ const Triagem = ({ setAbaAtiva }) => {
           <div className="p-3 rounded-full bg-amber-50 text-amber-600"><Bell size={20} /></div>
           <div className="text-left">
             <p className="text-xs text-gray-500 uppercase tracking-wide">Alertas Ativos</p>
-            <p className="text-2xl font-bold text-[#327933]">{pacientesEmConsulta.filter(p => p.status === 'Atenção' || p.status === 'Risco').length}</p>
+            <p className="text-2xl font-bold text-[#327933]">{pacientes.filter(p => p.status === 'Atenção' || p.status === 'Risco').length}</p>
           </div>
         </button>
 
@@ -261,7 +285,15 @@ const Triagem = ({ setAbaAtiva }) => {
           )}
         </div>
         <div className="space-y-4">
-          {getPacientesFiltrados().length > 0 ? (
+          {carregando ? (
+            <div className="text-center py-8">
+              <p className="text-gray-500 font-semibold">Carregando pacientes...</p>
+            </div>
+          ) : erro ? (
+            <div className="text-center py-8">
+              <p className="text-red-500 font-semibold">{erro}</p>
+            </div>
+          ) : getPacientesFiltrados().length > 0 ? (
             getPacientesFiltrados().map((paciente) => {
               return (
                 <div key={paciente.nome} className="rounded-xl border border-gray-200 overflow-hidden">
