@@ -25,6 +25,9 @@ export const AnamneseProvider = ({ children }) => {
     }
   });
 
+  // Estado para armazenar paciente selecionado do Firebase
+  const [pacienteSelecionado, setPacienteSelecionado] = useState(null);
+
   // Estados para listas de medicamentos
   const [listaPrescritos, setListaPrescritos] = useState([]);
   const [listaAdministrados, setListaAdministrados] = useState([]);
@@ -60,10 +63,37 @@ export const AnamneseProvider = ({ children }) => {
     setListaAdministrados(listaAdministrados.filter(med => med.id !== id));
   };
 
+  // Função para selecionar paciente do Firebase e preencher formulário
+  const selecionarPaciente = (pacienteFirebase) => {
+    setPacienteSelecionado(pacienteFirebase);
+    
+    // Preenche dados do paciente na aba Paciente
+    setFormData(prev => ({
+      ...prev,
+      paciente: {
+        ...prev.paciente,
+        nome: pacienteFirebase.nome || '',
+        nacionalidade: pacienteFirebase.nacionalidade || '',
+        cpf: pacienteFirebase.cpf || '',
+        endereco: pacienteFirebase.endereco || '',
+        telefone: pacienteFirebase.telefone || '',
+        profissao: pacienteFirebase.profissao || '',
+        estadoCivil: pacienteFirebase.estadoCivil || ''
+      },
+      clinica: {
+        ...prev.clinica,
+        tipoSanguineo: pacienteFirebase.tipoSanguineo || '',
+        prontuario: pacienteFirebase.id || '' // ID do documento como prontuário
+      }
+    }));
+  };
+
   return (
     <AnamneseContext.Provider value={{ 
       formData, 
       updateFormData,
+      pacienteSelecionado,
+      selecionarPaciente,
       listaPrescritos,
       listaAdministrados,
       adicionarPrescrito,

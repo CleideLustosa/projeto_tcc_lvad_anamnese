@@ -64,7 +64,7 @@ const ModalHistorico = ({ paciente, consultas, isOpen, onClose, onSelectConsulta
 };
 
 const Triagem = ({ setAbaAtiva }) => {
-  const { formData } = useAnamnese();
+  const { formData, selecionarPaciente } = useAnamnese();
   const [pacientes, setPacientes] = useState([]);
   const [modalAberto, setModalAberto] = useState(false);
   const [pacienteSelecionado, setPacienteSelecionado] = useState(null);
@@ -191,11 +191,15 @@ const Triagem = ({ setAbaAtiva }) => {
 
   const handleSelecionarConsulta = (consulta) => {
     console.log('Consulta selecionada:', consulta);
-    // Aqui você pode carregar os dados da consulta no contexto
+    // Carrega os dados da consulta no contexto
     handleFecharModal();
   };
 
   const handleAtender = (paciente) => {
+    // Seleciona o paciente e preenche o formulário de Anamnese
+    selecionarPaciente(paciente);
+    
+    // Navega para a aba de Paciente
     if (setAbaAtiva) {
       setAbaAtiva('paciente');
     }
