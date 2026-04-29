@@ -105,6 +105,8 @@ const Triagem = ({ setAbaAtiva }) => {
   }, []);
 
   // Função para obter a data de hoje no formato DD/MM/YYYY
+  // Usa new Date() que captura a data/hora local do navegador
+  // Evita problemas de fuso horário ao trabalhar com datas apenas (sem horas)
   const getDataHoje = () => {
     const hoje = new Date();
     return `${String(hoje.getDate()).padStart(2, '0')}/${String(hoje.getMonth() + 1).padStart(2, '0')}/${hoje.getFullYear()}`;
@@ -117,7 +119,8 @@ const Triagem = ({ setAbaAtiva }) => {
     switch (filtroTriagem) {
       case 'consultas-hoje':
         // TODO: Filtrar por médicoLogado.crm para exibir apenas consultas do médico logado
-        return pacientes.filter(p => p.dataAgendamento === '28/04/2026');
+        // Compara com a data atual do sistema de forma dinâmica
+        return pacientes.filter(p => p.dataAgendamento === getDataHoje());
       case 'alertas-ativos':
         // TODO: Filtrar por médicoLogado.crm para exibir alertas do médico logado
         return pacientes.filter(p => p.status === 'Atenção' || p.status === 'Risco');
@@ -222,7 +225,7 @@ const Triagem = ({ setAbaAtiva }) => {
           </div>
         </button>
 
-        {/* Consultas Hoje - Contagem dinâmica baseada em dataAgendamento */}
+        {/* Consultas Hoje - Contagem dinâmica baseada na data atual do sistema */}
         <button
           onClick={() => handleClickCardEstatistico('consultas-hoje')}
           className={`p-5 rounded-xl shadow-sm border-2 flex items-center gap-3 transition-all cursor-pointer ${
@@ -234,7 +237,7 @@ const Triagem = ({ setAbaAtiva }) => {
           <div className="p-3 rounded-full bg-blue-50 text-blue-600"><CalendarDays size={20} /></div>
           <div className="text-left">
             <p className="text-xs text-gray-500 uppercase tracking-wide">Consultas Hoje</p>
-            <p className="text-2xl font-bold text-[#327933]">{pacientes.filter(p => p.dataAgendamento === '28/04/2026').length}</p>
+            <p className="text-2xl font-bold text-[#327933]">{pacientes.filter(p => p.dataAgendamento === getDataHoje()).length}</p>
           </div>
         </button>
 
