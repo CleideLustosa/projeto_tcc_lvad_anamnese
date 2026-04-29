@@ -122,7 +122,8 @@ const DadosPessoais = () => {
         <div>
           <label className="text-xs font-bold text-gray-600 uppercase mb-2 block">Sexo</label>
           <select 
-            value={formData.paciente.sexo || ''} 
+            // O segredo está aqui: forçamos a leitura de 'F' como 'feminino' e 'M' como 'masculino'
+            value={formData.paciente.sexo === 'F' ? 'feminino' : formData.paciente.sexo === 'M' ? 'masculino' : formData.paciente.sexo || ''} 
             onChange={(e) => handleChange('sexo', e.target.value)}
             className="w-full p-3 bg-white border border-gray-200 rounded-xl text-sm outline-none focus:border-[#327933] appearance-none"
           >
@@ -130,7 +131,6 @@ const DadosPessoais = () => {
             <option value="masculino">Masculino</option>
             <option value="feminino">Feminino</option>
             <option value="outro">Outro</option>
-            <option value="prefiro-nao-responder">Prefiro não responder</option>
           </select>
         </div>
 
@@ -170,21 +170,22 @@ const DadosPessoais = () => {
           />
         </div>
 
-        {/* ESTADO CIVIL */}
-        <div className="md:col-span-2">
-          <label className="text-xs font-bold text-gray-600 uppercase mb-2 block">Estado Civil</label>
-          <select 
-            value={formData.paciente.estadoCivil || ''} 
-            onChange={(e) => handleChange('estadoCivil', e.target.value)}
-            className="w-full p-3 bg-white border border-gray-200 rounded-xl text-sm outline-none focus:border-[#327933] appearance-none"
-          >
-            <option value="">Selecione</option>
-            <option value="solteiro">Solteiro(a)</option>
-            <option value="casado">Casado(a)</option>
-            <option value="divorciado">Divorciado(a)</option>
-            <option value="viuvo">Viúvo(a)</option>
-          </select>
-        </div>
+      {/* ESTADO CIVIL */}
+      <div className="md:col-span-2">
+        <label className="text-xs font-bold text-gray-600 uppercase mb-2 block">Estado Civil</label>
+        <select 
+          // Usamos o .toLowerCase() para garantir que 'Casada' ou 'Casado' encontre 'casado'
+          value={formData.paciente.estadoCivil?.toLowerCase() || ''} 
+          onChange={(e) => handleChange('estadoCivil', e.target.value)}
+          className="w-full p-3 bg-white border border-gray-200 rounded-xl text-sm outline-none focus:border-[#327933] appearance-none"
+        >
+          <option value="">Selecione</option>
+          <option value="solteiro">Solteiro(a)</option>
+          <option value="casado">Casado(a)</option>
+          <option value="divorciado">Divorciado(a)</option>
+          <option value="viuvo">Viúvo(a)</option>
+        </select>
+      </div>
       </div>
     </div>
   );

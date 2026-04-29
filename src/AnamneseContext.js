@@ -22,6 +22,9 @@ export const AnamneseProvider = ({ children }) => {
       prontuario: '', 
       tipoSanguineo: '', 
       dataImplante: '', 
+      tipoDispositivo: '',
+      instituicaoImplante: '',
+      cirurgiaoResponsavel: '',
       motivoImplante: '', 
       observacoes: [],
       consideracoes: '',
@@ -97,8 +100,12 @@ export const AnamneseProvider = ({ children }) => {
       },
       clinica: {
         ...prev.clinica,
+        prontuario: pacienteFirebase.id || '',
         tipoSanguineo: pacienteFirebase.tipoSanguineo || '',
-        prontuario: pacienteFirebase.id || '' // ID do documento como prontuário
+        dataImplante: pacienteFirebase.dataImplante || '',
+        tipoDispositivo: pacienteFirebase.tipoDispositivo || '',
+        instituicaoImplante: pacienteFirebase.instituicaoImplante || '',
+        cirurgiaoResponsavel: pacienteFirebase.cirurgiaoResponsavel || ''
       }
     }));
   };
