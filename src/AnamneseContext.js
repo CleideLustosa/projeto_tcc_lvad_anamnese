@@ -5,7 +5,19 @@ const AnamneseContext = createContext();
 export const AnamneseProvider = ({ children }) => {
   // Estado único que guarda todas as abas
   const [formData, setFormData] = useState({
-    paciente: { nome: '', nacionalidade: '', cpf: '', endereco: '', telefone: '', profissao: '', estadoCivil: '', contatos: [] },
+    paciente: { 
+      nome: '', 
+      nacionalidade: '', 
+      cpf: '', 
+      endereco: '', 
+      telefone: '', 
+      profissao: '', 
+      estadoCivil: '',
+      dataNascimento: '',
+      idade: '',
+      sexo: '',
+      contatos: [] 
+    },
     clinica: { 
       prontuario: '', 
       tipoSanguineo: '', 
@@ -78,7 +90,10 @@ export const AnamneseProvider = ({ children }) => {
         endereco: pacienteFirebase.endereco || '',
         telefone: pacienteFirebase.telefone || '',
         profissao: pacienteFirebase.profissao || '',
-        estadoCivil: pacienteFirebase.estadoCivil || ''
+        estadoCivil: pacienteFirebase.estadoCivil || '',
+        dataNascimento: pacienteFirebase.dataNascimento || '',
+        idade: pacienteFirebase.idade ? String(pacienteFirebase.idade) : '',
+        sexo: pacienteFirebase.sexo || ''
       },
       clinica: {
         ...prev.clinica,
