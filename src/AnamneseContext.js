@@ -82,7 +82,8 @@ export const AnamneseProvider = ({ children }) => {
   const selecionarPaciente = (pacienteFirebase) => {
     setPacienteSelecionado(pacienteFirebase);
     
-    // Preenche dados do paciente na aba Paciente
+    // Preenche dados do paciente em ambas as abas (paciente e clinica)
+    // Distribui todas as informações disponíveis do paciente
     setFormData(prev => ({
       ...prev,
       paciente: {
@@ -100,7 +101,7 @@ export const AnamneseProvider = ({ children }) => {
       },
       clinica: {
         ...prev.clinica,
-        prontuario: pacienteFirebase.id || '',
+        prontuario: pacienteFirebase.prontuario || '',
         tipoSanguineo: pacienteFirebase.tipoSanguineo || '',
         dataImplante: pacienteFirebase.dataImplante || '',
         tipoDispositivo: pacienteFirebase.tipoDispositivo || '',
