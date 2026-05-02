@@ -62,6 +62,36 @@ const InformacoesClinicas = () => {
               className="w-full p-3 bg-white border rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#327933]" 
             />
           </div>
+          <div className="space-y-1">
+            <label className="text-xs font-bold text-gray-500 uppercase">Tipo de Dispositivo</label>
+            <input 
+              type="text" 
+              placeholder="Ex: HeartMate 3" 
+              value={dadosClinicos.tipoDispositivo || ''}
+              onChange={(e) => handleChange('tipoDispositivo', e.target.value)}
+              className="w-full p-3 bg-white border rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#327933]" 
+            />
+          </div>
+          <div className="space-y-1">
+            <label className="text-xs font-bold text-gray-500 uppercase">Instituição do Implante</label>
+            <input 
+              type="text" 
+              placeholder="Ex: Hospital X" 
+              value={dadosClinicos.instituicaoImplante || ''}
+              onChange={(e) => handleChange('instituicaoImplante', e.target.value)}
+              className="w-full p-3 bg-white border rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#327933]" 
+            />
+          </div>
+          <div className="space-y-1">
+            <label className="text-xs font-bold text-gray-500 uppercase">Cirurgião Responsável</label>
+            <input 
+              type="text" 
+              placeholder="Ex: Dr. João Silva" 
+              value={dadosClinicos.cirurgiaoResponsavel || ''}
+              onChange={(e) => handleChange('cirurgiaoResponsavel', e.target.value)}
+              className="w-full p-3 bg-white border rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#327933]" 
+            />
+          </div>
           <div className="md:col-span-3 space-y-1">
             <label className="text-xs font-bold text-gray-500 uppercase">Motivo do Implante</label>
             <textarea 

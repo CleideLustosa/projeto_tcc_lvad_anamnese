@@ -64,7 +64,7 @@ const ModalHistorico = ({ paciente, consultas, isOpen, onClose, onSelectConsulta
 };
 
 const Triagem = ({ setAbaAtiva }) => {
-  const { formData } = useAnamnese();
+  const { formData, selecionarPaciente, historicoConsultas } = useAnamnese();
   const [pacientes, setPacientes] = useState([]);
   const [modalAberto, setModalAberto] = useState(false);
   const [pacienteSelecionado, setPacienteSelecionado] = useState(null);
@@ -105,6 +105,8 @@ const Triagem = ({ setAbaAtiva }) => {
   }, []);
 
   // Função para obter a data de hoje no formato DD/MM/YYYY
+  // Usa new Date() que captura a data/hora local do navegador
+  // Evita problemas de fuso horário ao trabalhar com datas apenas (sem horas)
   const getDataHoje = () => {
     const hoje = new Date();
     return `${String(hoje.getDate()).padStart(2, '0')}/${String(hoje.getMonth() + 1).padStart(2, '0')}/${hoje.getFullYear()}`;
@@ -117,7 +119,8 @@ const Triagem = ({ setAbaAtiva }) => {
     switch (filtroTriagem) {
       case 'consultas-hoje':
         // TODO: Filtrar por médicoLogado.crm para exibir apenas consultas do médico logado
-        return pacientes.filter(p => p.dataAgendamento === '28/04/2026');
+        // Compara com a data atual do sistema de forma dinâmica
+        return pacientes.filter(p => p.dataAgendamento === getDataHoje());
       case 'alertas-ativos':
         // TODO: Filtrar por médicoLogado.crm para exibir alertas do médico logado
         return pacientes.filter(p => p.status === 'Atenção' || p.status === 'Risco');
@@ -141,22 +144,22 @@ const Triagem = ({ setAbaAtiva }) => {
     }
   };
 
-  const historicoConsultas = {
-    'João Silva': [
+  const historicoConsultasDefault = {
+    'João da Silva': [
       { data: '04/11/2025', medico: 'Dr. Silva', motivo: 'Acompanhamento de rotina' },
       { data: '28/10/2025', medico: 'Dra. Maria', motivo: 'Avaliação pós-implante' },
       { data: '15/10/2025', medico: 'Dr. Silva', motivo: 'Exames de rotina' },
     ],
-    'Maria Santos': [
+    'Maria Luiza Amaral': [
       { data: '03/11/2025', medico: 'Dra. Maria', motivo: 'Revisão de medicamentos' },
       { data: '25/10/2025', medico: 'Dr. Silva', motivo: 'Acompanhamento' },
     ],
-    'Pedro Costa': [
+    'Maria Esteves': [
       { data: '02/11/2025', medico: 'Dr. Costa', motivo: 'Exame de rotina' },
       { data: '20/10/2025', medico: 'Dra. Maria', motivo: 'Avaliação clínica' },
       { data: '10/10/2025', medico: 'Dr. Silva', motivo: 'Acompanhamento pós-implante' },
     ],
-    'Ana Carolina': [
+    'Lucas Moreira': [
       { data: '04/11/2025', medico: 'Dr. Silva', motivo: 'Acompanhamento' },
       { data: '30/10/2025', medico: 'Dra. Maria', motivo: 'Avaliação de marca-passo' },
     ],
@@ -176,6 +179,14 @@ const Triagem = ({ setAbaAtiva }) => {
     ],
   };
 
+  const historicoConsultasParaExibir = pacienteSelecionado
+    ? [
+        ...(historicoConsultas[pacienteSelecionado.id] || []),
+        ...(historicoConsultas[pacienteSelecionado.cpf] || []),
+        ...(historicoConsultasDefault[pacienteSelecionado.nome] || []),
+      ]
+    : [];
+
   const handleAbriirModal = (paciente) => {
     setPacienteSelecionado(paciente);
     setModalAberto(true);
@@ -188,11 +199,15 @@ const Triagem = ({ setAbaAtiva }) => {
 
   const handleSelecionarConsulta = (consulta) => {
     console.log('Consulta selecionada:', consulta);
-    // Aqui você pode carregar os dados da consulta no contexto
+    // Carrega os dados da consulta no contexto
     handleFecharModal();
   };
 
   const handleAtender = (paciente) => {
+    // Seleciona o paciente e preenche o formulário de Anamnese
+    selecionarPaciente(paciente);
+    
+    // Navega para a aba de Paciente
     if (setAbaAtiva) {
       setAbaAtiva('paciente');
     }
@@ -222,7 +237,7 @@ const Triagem = ({ setAbaAtiva }) => {
           </div>
         </button>
 
-        {/* Consultas Hoje - Contagem dinâmica baseada em dataAgendamento */}
+        {/* Consultas Hoje - Contagem dinâmica baseada na data atual do sistema */}
         <button
           onClick={() => handleClickCardEstatistico('consultas-hoje')}
           className={`p-5 rounded-xl shadow-sm border-2 flex items-center gap-3 transition-all cursor-pointer ${
@@ -234,7 +249,7 @@ const Triagem = ({ setAbaAtiva }) => {
           <div className="p-3 rounded-full bg-blue-50 text-blue-600"><CalendarDays size={20} /></div>
           <div className="text-left">
             <p className="text-xs text-gray-500 uppercase tracking-wide">Consultas Hoje</p>
-            <p className="text-2xl font-bold text-[#327933]">{pacientes.filter(p => p.dataAgendamento === '28/04/2026').length}</p>
+            <p className="text-2xl font-bold text-[#327933]">{pacientes.filter(p => p.dataAgendamento === getDataHoje()).length}</p>
           </div>
         </button>
 
@@ -301,13 +316,18 @@ const Triagem = ({ setAbaAtiva }) => {
                   <div className="bg-white p-4 hover:bg-gray-50/50 transition-all">
                     <div className="flex items-center gap-4 mb-3">
                       {/* Foto do Paciente */}
-                      <div className="w-16 h-16 rounded-full bg-gray-200 border-2 border-gray-300 flex items-center justify-center flex-shrink-0">
-                        {paciente.foto ? (
-                          <img src={paciente.foto} alt={paciente.nome} className="w-full h-full object-cover rounded-full" />
-                        ) : (
-                          <User size={28} className="text-gray-400" />
-                        )}
-                      </div>
+                      <div className="w-16 h-16 rounded-full bg-gray-200 border-2 border-gray-300 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                      {paciente.foto && paciente.foto.startsWith('http') ? (
+                        <img 
+                          src={paciente.foto} 
+                          alt={paciente.nome} 
+                          className="w-full h-full object-cover"
+                          onError={(e) => { e.target.src = ""; e.target.style.display = "none"; }} 
+                        />
+                      ) : (
+                        <User size={28} className="text-gray-400" />
+                      )}
+                    </div>
 
                       {/* Info Principal - Reorganizado */}
                       <div className="flex-1">
@@ -372,7 +392,7 @@ const Triagem = ({ setAbaAtiva }) => {
       {/* Modal de Histórico */}
       <ModalHistorico
         paciente={pacienteSelecionado}
-        consultas={pacienteSelecionado ? historicoConsultas[pacienteSelecionado.nome] || [] : []}
+        consultas={historicoConsultasParaExibir}
         isOpen={modalAberto}
         onClose={handleFecharModal}
         onSelectConsulta={handleSelecionarConsulta}
