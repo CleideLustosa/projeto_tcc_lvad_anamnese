@@ -47,6 +47,9 @@ export const AnamneseProvider = ({ children }) => {
   const [listaPrescritos, setListaPrescritos] = useState([]);
   const [listaAdministrados, setListaAdministrados] = useState([]);
 
+  // Estado para histórico de consultas por paciente
+  const [historicoConsultas, setHistoricoConsultas] = useState({});
+
   // Função para atualizar qualquer campo de qualquer aba preservando os dados anteriores
   const updateFormData = (aba, dados) => {
     setFormData(prev => ({
@@ -78,26 +81,39 @@ export const AnamneseProvider = ({ children }) => {
     setListaAdministrados(listaAdministrados.filter(med => med.id !== id));
   };
 
+  // Função para adicionar uma consulta ao histórico do paciente
+  const adicionarHistoricoConsulta = (pacienteId, consulta, pacienteCpf = null) => {
+    setHistoricoConsultas((prev) => {
+      const historicoPorId = prev[pacienteId] || [];
+      const historicoPorCpf = pacienteCpf ? prev[pacienteCpf] || [] : [];
+      return {
+        ...prev,
+        [pacienteId]: [consulta, ...historicoPorId],
+        ...(pacienteCpf ? { [pacienteCpf]: [consulta, ...historicoPorCpf] } : {}),
+      };
+    });
+  };
+
   // Função para selecionar paciente do Firebase e preencher formulário
   const selecionarPaciente = (pacienteFirebase) => {
     setPacienteSelecionado(pacienteFirebase);
     
     // Preenche dados do paciente em ambas as abas (paciente e clinica)
     // Distribui todas as informações disponíveis do paciente
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       paciente: {
-        ...prev.paciente,
         nome: pacienteFirebase.nome || '',
         nacionalidade: pacienteFirebase.nacionalidade || '',
         cpf: pacienteFirebase.cpf || '',
         endereco: pacienteFirebase.endereco || '',
         telefone: pacienteFirebase.telefone || '',
         profissao: pacienteFirebase.profissao || '',
-        estadoCivil: pacienteFirebase.estadoCivil || '',
+        estadoCivil: pacienteFirebase.estadoCivil || '', // Certifique-se de que o Firebase envia 'Casada' ou 'Solteira'
         dataNascimento: pacienteFirebase.dataNascimento || '',
         idade: pacienteFirebase.idade ? String(pacienteFirebase.idade) : '',
-        sexo: pacienteFirebase.sexo || ''
+        sexo: pacienteFirebase.sexo || '',
+        contatos: pacienteFirebase.contatos || []
       },
       clinica: {
         ...prev.clinica,
@@ -119,10 +135,12 @@ export const AnamneseProvider = ({ children }) => {
       selecionarPaciente,
       listaPrescritos,
       listaAdministrados,
+      historicoConsultas,
       adicionarPrescrito,
       removerPrescrito,
       adicionarAdministrado,
-      removerAdministrado
+      removerAdministrado,
+      adicionarHistoricoConsulta
     }}>
       {children}
     </AnamneseContext.Provider>

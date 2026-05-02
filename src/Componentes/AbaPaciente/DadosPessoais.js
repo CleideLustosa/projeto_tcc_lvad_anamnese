@@ -170,20 +170,22 @@ const DadosPessoais = () => {
           />
         </div>
 
-      {/* ESTADO CIVIL */}
+    {/* ESTADO CIVIL */}
       <div className="md:col-span-2">
         <label className="text-xs font-bold text-gray-600 uppercase mb-2 block">Estado Civil</label>
         <select 
-          // Usamos o .toLowerCase() para garantir que 'Casada' ou 'Casado' encontre 'casado'
-          value={formData.paciente.estadoCivil?.toLowerCase() || ''} 
+          // Remova o .toLowerCase() e use o valor vindo do Firebase diretamente
+          value={formData.paciente.estadoCivil || ''} 
           onChange={(e) => handleChange('estadoCivil', e.target.value)}
           className="w-full p-3 bg-white border border-gray-200 rounded-xl text-sm outline-none focus:border-[#327933] appearance-none"
         >
           <option value="">Selecione</option>
-          <option value="solteiro">Solteiro(a)</option>
-          <option value="casado">Casado(a)</option>
-          <option value="divorciado">Divorciado(a)</option>
-          <option value="viuvo">Viúvo(a)</option>
+          {/* Ajuste os valores para baterem com o que você salvou no Firebase (ex: "Casada") */}
+          <option value="Solteiro">Solteiro(a)</option>
+          <option value="Casado">Casado(a)</option>
+          <option value="Casada">Casada</option>
+          <option value="Divorciado">Divorciado(a)</option>
+          <option value="Viúvo">Viúvo(a)</option>
         </select>
       </div>
       </div>

@@ -161,7 +161,7 @@ function App() {
 
             {abaAtiva === 'consulta' && (
               <div className="space-y-6 animate-in fade-in duration-500">
-                <ResumoConsulta />
+                <ResumoConsulta setAbaAtiva={setAbaAtiva} />
                 <div className="flex justify-start pt-4">
                   <button onClick={() => setAbaAtiva('dispositivo')} className="text-gray-400 font-bold uppercase text-sm">← Voltar</button>
                 </div>

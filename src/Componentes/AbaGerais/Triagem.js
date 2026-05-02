@@ -64,7 +64,7 @@ const ModalHistorico = ({ paciente, consultas, isOpen, onClose, onSelectConsulta
 };
 
 const Triagem = ({ setAbaAtiva }) => {
-  const { formData, selecionarPaciente } = useAnamnese();
+  const { formData, selecionarPaciente, historicoConsultas } = useAnamnese();
   const [pacientes, setPacientes] = useState([]);
   const [modalAberto, setModalAberto] = useState(false);
   const [pacienteSelecionado, setPacienteSelecionado] = useState(null);
@@ -144,22 +144,22 @@ const Triagem = ({ setAbaAtiva }) => {
     }
   };
 
-  const historicoConsultas = {
-    'João Silva': [
+  const historicoConsultasDefault = {
+    'João da Silva': [
       { data: '04/11/2025', medico: 'Dr. Silva', motivo: 'Acompanhamento de rotina' },
       { data: '28/10/2025', medico: 'Dra. Maria', motivo: 'Avaliação pós-implante' },
       { data: '15/10/2025', medico: 'Dr. Silva', motivo: 'Exames de rotina' },
     ],
-    'Maria Santos': [
+    'Maria Luiza Amaral': [
       { data: '03/11/2025', medico: 'Dra. Maria', motivo: 'Revisão de medicamentos' },
       { data: '25/10/2025', medico: 'Dr. Silva', motivo: 'Acompanhamento' },
     ],
-    'Pedro Costa': [
+    'Maria Esteves': [
       { data: '02/11/2025', medico: 'Dr. Costa', motivo: 'Exame de rotina' },
       { data: '20/10/2025', medico: 'Dra. Maria', motivo: 'Avaliação clínica' },
       { data: '10/10/2025', medico: 'Dr. Silva', motivo: 'Acompanhamento pós-implante' },
     ],
-    'Ana Carolina': [
+    'Lucas Moreira': [
       { data: '04/11/2025', medico: 'Dr. Silva', motivo: 'Acompanhamento' },
       { data: '30/10/2025', medico: 'Dra. Maria', motivo: 'Avaliação de marca-passo' },
     ],
@@ -178,6 +178,14 @@ const Triagem = ({ setAbaAtiva }) => {
       { data: '29/10/2025', medico: 'Dra. Maria', motivo: 'Avaliação clínica' },
     ],
   };
+
+  const historicoConsultasParaExibir = pacienteSelecionado
+    ? [
+        ...(historicoConsultas[pacienteSelecionado.id] || []),
+        ...(historicoConsultas[pacienteSelecionado.cpf] || []),
+        ...(historicoConsultasDefault[pacienteSelecionado.nome] || []),
+      ]
+    : [];
 
   const handleAbriirModal = (paciente) => {
     setPacienteSelecionado(paciente);
@@ -308,13 +316,18 @@ const Triagem = ({ setAbaAtiva }) => {
                   <div className="bg-white p-4 hover:bg-gray-50/50 transition-all">
                     <div className="flex items-center gap-4 mb-3">
                       {/* Foto do Paciente */}
-                      <div className="w-16 h-16 rounded-full bg-gray-200 border-2 border-gray-300 flex items-center justify-center flex-shrink-0">
-                        {paciente.foto ? (
-                          <img src={paciente.foto} alt={paciente.nome} className="w-full h-full object-cover rounded-full" />
-                        ) : (
-                          <User size={28} className="text-gray-400" />
-                        )}
-                      </div>
+                      <div className="w-16 h-16 rounded-full bg-gray-200 border-2 border-gray-300 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                      {paciente.foto && paciente.foto.startsWith('http') ? (
+                        <img 
+                          src={paciente.foto} 
+                          alt={paciente.nome} 
+                          className="w-full h-full object-cover"
+                          onError={(e) => { e.target.src = ""; e.target.style.display = "none"; }} 
+                        />
+                      ) : (
+                        <User size={28} className="text-gray-400" />
+                      )}
+                    </div>
 
                       {/* Info Principal - Reorganizado */}
                       <div className="flex-1">
@@ -379,7 +392,7 @@ const Triagem = ({ setAbaAtiva }) => {
       {/* Modal de Histórico */}
       <ModalHistorico
         paciente={pacienteSelecionado}
-        consultas={pacienteSelecionado ? historicoConsultas[pacienteSelecionado.nome] || [] : []}
+        consultas={historicoConsultasParaExibir}
         isOpen={modalAberto}
         onClose={handleFecharModal}
         onSelectConsulta={handleSelecionarConsulta}

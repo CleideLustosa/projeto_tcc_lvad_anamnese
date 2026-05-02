@@ -1,29 +1,104 @@
 import React, { useState } from 'react';
 import { ClipboardCheck, Send, FileText } from 'lucide-react';
 import { useAnamnese } from '../../AnamneseContext';
+import { db } from '../../firebaseConfig';
+import { doc, updateDoc, collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import gerarRelatorioPDF from './RelatórioConsultaPDF';
 
-const ResumoConsulta = () => {
-  const { formData, updateFormData, listaPrescritos, listaAdministrados } = useAnamnese();
-  const [errorMessage, setErrorMessage] = useState('');
-  const { queixa, intensidadeSintomas, duracaoSintomas, tratamentos, conduta } = formData.consulta;
-  const paciente = formData.paciente || {};
-  const clinica = formData.clinica || {};
-  const fotoPaciente = paciente.fotoPaciente || '';
+const ResumoConsulta = ({ setAbaAtiva }) => {
+  // Pega pacienteSelecionado do contexto para garantir acesso à foto
+  const { 
+    formData, 
+    updateFormData, 
+    listaPrescritos, 
+    listaAdministrados, 
+    pacienteSelecionado,
+    adicionarHistoricoConsulta
+  } = useAnamnese();
 
-  const handleSalvar = () => {
-    if (!queixa.trim() || !intensidadeSintomas || !duracaoSintomas.trim() || !conduta.trim()) {
+  const [errorMessage, setErrorMessage] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
+  const { queixa, intensidadeSintomas, duracaoSintomas, tratamentos, conduta } = formData.consulta;
+
+  const handleSalvar = async () => {
+    const errors = {};
+    if (!queixa.trim()) errors.queixa = true;
+    if (!intensidadeSintomas) errors.intensidadeSintomas = true;
+    if (!duracaoSintomas.trim()) errors.duracaoSintomas = true;
+    if (!conduta.trim()) errors.conduta = true;
+
+    setFieldErrors(errors);
+
+    if (Object.keys(errors).length > 0) {
       setErrorMessage('Preencha todos os campos obrigatórios da conclusão antes de salvar.');
       return;
     }
 
+    if (!pacienteSelecionado?.id) {
+      setErrorMessage('Paciente selecionado inválido. Não foi possível salvar a consulta.');
+      return;
+    }
+
     setErrorMessage('');
-    window.alert('Consulta salva com sucesso.');
-    console.log('Conclusão salva:', formData.consulta);
+    setFieldErrors({});
+
+    try {
+      const pacienteId = pacienteSelecionado.id;
+      const pacienteRef = doc(db, 'pacientes', pacienteId);
+
+      const proximaConsulta =
+        formData.clinica?.proximaConsulta ||
+        formData.clinica?.dataProximaConsulta ||
+        '';
+
+      await updateDoc(pacienteRef, {
+        status: 'Estável',
+        dataAgendamento: proximaConsulta || '',
+      });
+
+      const consultasCollection = collection(pacienteRef, 'consultas');
+      await addDoc(consultasCollection, {
+        ...formData.consulta,
+        criadoEm: serverTimestamp(),
+        registradoPor: pacienteSelecionado?.nome || 'Equipe Clínica',
+      });
+
+      const novoHistorico = {
+        data: new Date().toLocaleDateString('pt-BR'),
+        medico: formData.clinica?.cirurgiaoResponsavel || 'Equipe Clínica',
+        motivo: queixa || conduta || 'Consulta concluída',
+        ...formData.consulta,
+      };
+
+      adicionarHistoricoConsulta(pacienteId, novoHistorico, pacienteSelecionado?.cpf || null);
+
+      window.alert('Consulta salva com sucesso.');
+
+      if (typeof setAbaAtiva === 'function') {
+        setTimeout(() => {
+          setAbaAtiva('dashboard');
+        }, 2000);
+      }
+
+      // Atualização do histórico imediatamente no modal de Triagem,
+     
+    } catch (error) {
+      console.error('Erro ao salvar consulta:', error);
+      setErrorMessage('Houve um problema de sincronização com o banco de dados. Verifique sua conexão e tente novamente.');
+    }
   };
 
-  const gerarPDF = () => {
-    gerarRelatorioPDF({ formData, listaPrescritos, listaAdministrados });
+  // Função alterada para enviar a foto que já está no sistema para o PDF
+  const gerarPDF = async () => {
+    // Foto do paciente selecionado (que veio do Firebase)
+    const fotoParaOReport = pacienteSelecionado?.foto || formData.paciente?.foto || '';
+
+    await gerarRelatorioPDF({ 
+      formData, 
+      listaPrescritos, 
+      listaAdministrados,
+      fotoUrlOuBase64: fotoParaOReport // Envio da URL ou Base64 da imagem para o relatório
+    });
   };
 
   return (
@@ -40,7 +115,7 @@ const ResumoConsulta = () => {
             Queixa Principal *
           </label>
           <textarea 
-            className="w-full p-4 bg-white border border-gray-200 rounded-xl text-sm outline-none focus:border-[#327933] min-h-[100px]"
+            className={`w-full p-4 bg-white border rounded-xl text-sm outline-none focus:border-[#327933] min-h-[100px] ${fieldErrors.queixa ? 'border-red-500' : 'border-gray-200'}`}
             placeholder="Descreva o motivo principal da consulta hoje..."
             value={queixa}
             onChange={(e) => updateFormData('consulta', { queixa: e.target.value })}
@@ -52,9 +127,12 @@ const ResumoConsulta = () => {
           <div>
             <label className="text-xs font-bold text-gray-600 uppercase mb-2 block">
               Intensidade dos Sintomas *
+              <span className="ml-1 text-gray-400 cursor-help" title="Avalie a gravidade dos sintomas relatados pelo paciente, considerando fatores como dor, desconforto e impacto na qualidade de vida. Use uma escala de 1 a 5 para padronizar a avaliação.">
+                ?
+              </span>
             </label>
             <select
-              className="w-full p-3 bg-white border border-gray-200 rounded-xl text-sm outline-none appearance-none"
+              className={`w-full p-3 bg-white border rounded-xl text-sm outline-none appearance-none ${fieldErrors.intensidadeSintomas ? 'border-red-500' : 'border-gray-200'}`}
               value={intensidadeSintomas}
               onChange={(e) => updateFormData('consulta', { intensidadeSintomas: e.target.value })}
             >
@@ -68,12 +146,12 @@ const ResumoConsulta = () => {
           </div>
           <div>
             <label className="text-xs font-bold text-gray-600 uppercase mb-2 block">
-              Duração dos Sintomas
+              Duração dos Sintomas *
             </label>
             <input 
               type="text"
               placeholder="Ex: Há 3 dias"
-              className="w-full p-3 bg-white border border-gray-200 rounded-xl text-sm outline-none focus:border-[#327933]"
+              className={`w-full p-3 bg-white border rounded-xl text-sm outline-none focus:border-[#327933] ${fieldErrors.duracaoSintomas ? 'border-red-500' : 'border-gray-200'}`}
               value={duracaoSintomas}
               onChange={(e) => updateFormData('consulta', { duracaoSintomas: e.target.value })}
             />
@@ -96,10 +174,13 @@ const ResumoConsulta = () => {
         {/* Conduta e Observações */}
         <div>
           <label className="text-xs font-bold text-gray-600 uppercase mb-2 block">
-            Conduta e Observações
+            Conduta e Observações *
+            <span className="ml-1 text-gray-400 cursor-help" title="Descreva o plano terapêutico adotado, incluindo ajustes em medicações, orientações ao paciente, exames solicitados e próximos passos do tratamento. Foque em ações práticas e preventivas.">
+              ?
+            </span>
           </label>
           <textarea 
-            className="w-full p-4 bg-white border border-gray-200 rounded-xl text-sm outline-none focus:border-[#327933] min-h-[120px]"
+            className={`w-full p-4 bg-white border rounded-xl text-sm outline-none focus:border-[#327933] min-h-[120px] ${fieldErrors.conduta ? 'border-red-500' : 'border-gray-200'}`}
             placeholder="Plano terapêutico, orientações dadas ao paciente ou alterações na medicação..."
             value={conduta}
             onChange={(e) => updateFormData('consulta', { conduta: e.target.value })}
